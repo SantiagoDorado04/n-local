@@ -1,0 +1,4 @@
+git checkout -b nombre_rama
+git add .
+git commit -m "descripcion_cambios"
+git push origin nombre_rama

@@ -1,0 +1,173 @@
+<div wire:ignore.self class="modal modal-info fade" tabindex="-1" data-backdrop="static" data-keyboard="false"
+    id="show-modal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" aria-label="{{ __('voyager::generic.close') }}"
+                    wire:click="cancel()"><span aria-hidden="true">&times;</span></button>
+                <h5 class="modal-title">
+                    <i class="voyager-list"></i>&nbsp;Detalles de la actividad presencial
+                </h5>
+            </div>
+            @php
+                $eventType = $event_type;
+                switch ($eventType) {
+                    case 'presential':
+                        $eventType = 'Presencial';
+                        break;
+                    case 'virtual':
+                        $eventType = 'virtual';
+                        break;
+                    default:
+                        $eventType = 'No definido';
+                        break;
+                }
+
+            @endphp
+            <div class="modal-body">
+                <div class="row no-margin-bottom">
+                    <div class="col-lg-12">
+                        <table class="table table-striped">
+                            <tr>
+                                <th>
+                                    <li>Nombre:</li>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>{{ $name }}</td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <li>Fecha:</li>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>{{ $date }}</td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <li>Hora:</li>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>{{ $hour }}</td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <li>Ubicacion:</li>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>{{ $location }}</td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <li>Facilitador:</li>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>{{ $facilitator }}</td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <li>Duracion (minutos):</li>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>{{ $duration }}</td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <li>Link de registro:</li>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>{{ $registration_link }}</td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <li>Tipo de evento:</li>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>{{ $eventType }}</td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <li>Link virtual:</li>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>{{ $virtual_link }}</td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <li>Puntos asignados:</li>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>{{ $points }}</td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <li>Puntos requeridos:</li>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>{{ $required_points }}</td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <li>Fecha limite de cancelacion:</li>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td>{{ $cancellation_deadline }}</td>
+                            </tr>
+                            <tr>
+                                <th><li>Mensaje de recordatorio:</li></th>
+                            </tr>
+                            <tr>
+                                <td>{{ $reminder_message }}</td>
+                            </tr>
+                            <tr>
+                                <th><li>Fecha envío mensaje recordatorio:</li></th>
+                            </tr>
+                            <tr>
+                                <td>{{ $reminder_message_date }}</td>
+                            </tr>
+                            <tr>
+                                <th><li>Medio envío mensaje recordatorio:</li></th>
+                            </tr>
+                            <tr>
+                                <td>{{ $reminder_message_mean }}</td>
+                            </tr>
+                            <tr>
+                                <th><li>Mensaje de felicitacion:</li></th>
+                            </tr>
+                            <tr>
+                                <td>{{ $congratulation_message }}</td>
+                            </tr>
+                            <tr>
+                                <th><li>Fecha de mensaje de felicitacion:</li></th>
+                            </tr>
+                            <tr>
+                                <td>{{ $congratulation_message_date }}</td>
+                            </tr>
+                            <tr>
+                                <th><li>Medio de mensaje de felicitacion:</li></th>
+                            </tr>
+                            <tr>
+                                <td>{{ $congratulation_message_mean }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-right"
+                    wire:click="cancel()">{{ __('voyager::generic.close') }}</button>
+            </div>
+        </div>
+    </div>
+</div>

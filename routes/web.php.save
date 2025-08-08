@@ -1,0 +1,162 @@
+<?php
+
+use TCG\Voyager\Facades\Voyager;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CkeditorController;
+use App\Http\Livewire\Admin\Auth\SignUpComponent;
+use App\Http\Livewire\Admin\Tasks\TasksComponent;
+use App\Http\Livewire\Admin\Contacts\ContactsComponent;
+use App\Http\Livewire\Admin\Meetings\MeetingsComponent;
+use App\Http\Livewire\Admin\Forms\ExternalFormComponent;
+use App\Http\Livewire\Admin\Viability\ViabilityComponent;
+use App\Http\Livewire\Admin\Profile\UsersProfileComponent;
+use App\Http\Livewire\Admin\Viability\InnovationComponent;
+use App\Http\Livewire\Admin\Contacts\ContactsCloudComponent;
+use App\Http\Livewire\Admin\Contacts\ContactsFormsComponent;
+use App\Http\Livewire\Admin\SelfManagement\ProblemsComponent;
+use App\Http\Livewire\Admin\Profile\CompaniesProfileComponent;
+use App\Http\Livewire\Admin\SelfManagement\SolutionsComponent;
+use App\Http\Livewire\Admin\SelfManagement\IndicatorsComponent;
+use App\Http\Controllers\Admin\Mailing\MailingMassiveController;
+use App\Http\Livewire\Admin\Announcements\AnnouncementComponent;
+use App\Http\Livewire\Admin\BusinessModel\BusinessModelComponent;
+use App\Http\Livewire\Admin\SelfManagement\MetodologiesComponent;
+use App\Http\Livewire\Admin\TaskSchedules\TaskSchedulesComponent;
+use App\Http\Livewire\Admin\CommercialLand\CommercialLandComponent;
+use App\Http\Livewire\Admin\Announcements\AnnouncementFormComponent;
+use App\Http\Livewire\Admin\CommercialForms\CommercialFormComponent;
+use App\Http\Livewire\Admin\CommercialAction\SocialQuestionsComponent;
+use App\Http\Livewire\Admin\CommercialForms\CommercialOptionComponent;
+use App\Http\Livewire\Admin\Characterization\CharacterizationComponent;
+use App\Http\Livewire\Admin\CommercialAction\CommercialActionComponent;
+use App\Http\Livewire\Admin\ContactSchedules\ContactSchedulesComponent;
+use App\Http\Livewire\Admin\ProductsServices\ProductsServicesComponent;
+use App\Http\Livewire\Admin\CommercialForms\CommercialQuestionComponent;
+use App\Http\Livewire\Admin\ContactSchedules\CalendarSchedulesComponent;
+use App\Http\Livewire\Admin\MessageManagement\MessageManagementComponent;
+use App\Http\Livewire\Admin\Announcements\AnnouncementFormOptionComponent;
+use App\Http\Livewire\Admin\CommercialForms\CommercialFormActionComponent;
+use App\Http\Livewire\Admin\CommercialForms\CommercialFormPreviewComponent;
+use App\Http\Livewire\Admin\CommercialStrategy\CommercialStrategyComponent;
+use App\Http\Livewire\Admin\CommercialForms\CommercialFormContactsComponent;
+use App\Http\Livewire\Admin\CommercialAction\MessageManagementActionComponent;
+use App\Http\Livewire\Admin\SocialEngineering\ConfigSocialEnginneringComponent;
+use App\Http\Livewire\Admin\SocialEngineering\ProcessSocialEnginneringComponent;
+use App\Http\Livewire\Admin\AnnouncementsContatcs\AnnouncementsContactsComponent;
+use App\Http\Livewire\Admin\CommercialManagement\MailingMassive\MailingMassiveComponent;
+use App\Http\Livewire\Admin\ContactsForms\ContactsFormsComponent as ContactAssignedForms;
+use App\Http\Livewire\Admin\CommercialManagement\MailingTemplates\MailingTemplatesComponent;
+use App\Http\Livewire\Admin\CommercialManagement\MailingIndividual\MailingIndividualComponent;
+use App\Http\Livewire\Admin\CommercialManagement\MailingTemplates\CreateMailingTemplatesComponent;
+use App\Http\Livewire\Admin\SelfManagement\SelfManagementComponent;
+use App\Http\Livewire\Admin\Viability\ImpactComponent;
+use App\Http\Livewire\Admin\Viability\ScaleComponent;
+
+Route::get('/', function () {
+    return view('welcome2');
+})->name('home.auth');
+
+Route::get('/image', function () {
+    return view('example');
+});
+
+Route::get('signup', SignUpComponent::class)->name('signup');
+
+/* External Form */
+Route::get('form/{token}', ExternalFormComponent::class)->name('commercial.form-external');
+
+/* CKEditor upload files */
+Route::post('/ckeditor/image_upload', [CkeditorController::class, 'upload'])->name('upload');
+
+Route::get('update-read',[MailingMassiveController::class,'updatedRead'])->name('update-read');
+
+Route::group(['prefix' => 'admin'/* ,'middleware'=>'admin' */], function () {
+
+    Voyager::routes();
+
+    //ADMIN
+
+     /* Perfíl empresa */
+    Route::get('profile-company', CompaniesProfileComponent::class)->name('company.profile');
+
+    /* Planificación Terreno Comercial */
+    Route::get('commercial-lands', CommercialLandComponent::class)->name('commercial.lands');
+    Route::get('commercial-lands/{land}/strategies', CommercialStrategyComponent::class)->name('commercial.strategies');
+    Route::get('commercial-lands/{strategy}/actions', CommercialActionComponent::class)->name('commercial.actions');
+    Route::get('commercial-lands/{action}/questions', SocialQuestionsComponent::class)->name('commercial.actions.questions');
+    Route::get('commercial-lands/{action}/messages', MessageManagementActionComponent::class)->name('commercial.actions.messages');
+
+    /* Widget simulador */
+    Route::get('forms', CommercialFormComponent::class)->name('commercial.forms');
+    Route::get('forms/{form}/questions', CommercialQuestionComponent::class)->name('commercial.questions');
+    Route::get('forms/{question}/options', CommercialOptionComponent::class)->name('commercial.options');
+    Route::get('forms/{form}/form-preview', CommercialFormPreviewComponent::class)->name('commercial.form-preview');
+
+    Route::get('forms/{form}/actions', CommercialFormActionComponent::class)->name('commercial.form-action');
+    Route::get('forms/{action}/contacts', CommercialFormContactsComponent::class)->name('commercial.form-contacts');
+
+    Route::get('characterization', CharacterizationComponent::class)->name('characterization');
+
+    /* Convocatorias */
+    Route::get('announcements', AnnouncementComponent::class)->name('announcements');
+    Route::get('announcements/{announcement}/forms', AnnouncementFormComponent::class)->name('announcement.forms');
+    Route::get('announcements/{form}/form-options', AnnouncementFormOptionComponent::class)->name('announcement.form-options');
+
+    /* Contactos */
+    Route::get('contacts', ContactsComponent::class)->name('commercial.contacts');
+    Route::get('contacts-cloud', ContactsCloudComponent::class)->name('commercial.contacts-cloud');
+    Route::get('contacts-cloud/{id}/forms', ContactsFormsComponent::class)->name('commercial.contacts-cloud.form');
+
+    /* Ingeniería social */
+    Route::get('questions-social-engineering', ConfigSocialEnginneringComponent::class)->name('social-engineering.config');
+    Route::get('social-engineering', ProcessSocialEnginneringComponent::class)->name('social-engineering.process');
+
+    /* Perfíl de contacto */
+    Route::get('profiles/{contact}', UsersProfileComponent::class)->name('users.profile');
+
+    /* Mensajes de valor */
+    Route::get('message-management', MessageManagementComponent::class)->name('message-management');
+    /* Registro de tareas */
+    Route::get('tasks', TasksComponent::class)->name('tasks');
+    /* Registro de agendamientos */
+    Route::get('meetings', MeetingsComponent::class)->name('meetings');
+
+    /* Gestión plantillas de correo */
+    Route::get('mailing-templates', MailingTemplatesComponent::class)->name('mailing.templates');
+    Route::get('mailing-templates/template/{template?}', CreateMailingTemplatesComponent::class)->name('mailing.templates.add');
+
+    /* Mailing */
+    Route::get('mailing-individual', MailingIndividualComponent::class)->name('mailing.individual');
+    Route::get('mailing-massive', MailingMassiveComponent::class)->name('mailing.massive');
+
+    //AGENT
+
+    /* Planificación de tareas(Agente) */
+    Route::get('contact-schedules', ContactSchedulesComponent::class)->name('contacts-schedules');
+    Route::get('contact-schedules/calendar', CalendarSchedulesComponent::class)->name('contacts-schedules.calendar');
+
+    Route::get('task-schedules', TaskSchedulesComponent::class)->name('task-schedules');
+    
+
+    //SELF MANAGEMENT
+    Route::get('self-management', SelfManagementComponent::class)->name('self-management');
+    Route::get('self-management/{project}/problems', ProblemsComponent::class)->name('problems');
+    Route::get('self-management/{problem}/solutions', SolutionsComponent::class)->name('solutions');
+    Route::get('self-management/{solution}/metodologies', MetodologiesComponent::class)->name('metodologies');
+    Route::get('self-management/{metodology}/indicators', IndicatorsComponent::class)->name('indicators');
+
+
+    //Companies
+    Route::get('my-forms', ContactAssignedForms::class)->name('contacts.my-forms');
+    Route::get('products-services', ProductsServicesComponent::class)->name('contacts.products-services');
+    Route::get('business-models', BusinessModelComponent::class)->name('contacts.business-models');
+
+    Route::get('my-forms/form/{form}/action/{action}', AnnouncementsContactsComponent::class)->name('contacts.my-forms.announcements');
+
+    Route::get('viability-check', ViabilityComponent::class)->name('contacts.viability');
+    Route::get('viability-check/{project}/innovation', InnovationComponent::class)->name('contacts.viability.innovation');
+    Route::get('viability-check/{project}/scale', ScaleComponent::class)->name('contacts.viability.scale');
+    Route::get('viability-check/{project}/viability', ImpactComponent::class)->name('contacts.viability.impact');
+
+});
+
