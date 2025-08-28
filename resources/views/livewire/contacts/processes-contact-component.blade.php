@@ -1,54 +1,10 @@
 <div>
-    <style>
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 40px;
-            height: 20px;
-            background-color: #ccc;
-            border-radius: 20px;
-            padding: 2px;
-            cursor: pointer;
-        }
-
-        .switch::after {
-            content: '';
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background-color: white;
-            top: 1px;
-            left: 1px;
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .switch-on {
-            background-color: #4CAF50;
-        }
-
-        .switch-off {
-            background-color: #2196F3;
-        }
-
-        .switch-on::after {
-            transform: translateX(20px);
-        }
-
-        .badge-approved {
-            background-color: #4CAF50;
-        }
-
-        .badge-not-approved {
-            background-color: #FF5722;
-        }
-    </style>
-
     @section('breadcrumbs')
         <ol class="breadcrumb hidden-xs">
             <li class="active">
-                <a href="{{ route('voyager.dashboard') }}"><i class="voyager-boat"></i>
-                    {{ __('voyager::generic.dashboard') }}</a>
+                <a href="{{ route('voyager.dashboard') }}">
+                    <i class="voyager-boat"></i> {{ __('voyager::generic.dashboard') }}
+                </a>
             </li>
             <li>Mis procesos</li>
         </ol>
@@ -70,61 +26,39 @@
                 <div class="panel panel-bordered">
                     <div class="panel-body">
                         <div class="row no-margin-bottom">
-                            <div class="col-md-12">
-                                <div class="table-responsive">
-                                    <table id="myTable" class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th><small>Video</small></th>
-                                                <th><small>Proceso</small></th>
-                                                <th><small>Etapa</small></th>
-                                                <th><small>Estado</small></th>
-                                                <th><small>Acciones</small></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($postulations as $item)
-                                                <tr>
-                                                    <td style="height: 160px;"
-                                                        class="embed-responsive embed-responsive-16by9">
-                                                        @if ($item->stage->embebed_video)
-                                                            {!! $item->stage->embebed_video !!}
-                                                        @else
-                                                            Sin video Introductorio
-                                                        @endif
-                                                    </td>
-                                                    <td>{{ $item->stage->process->name }}</td>
-                                                    <td>{{ $item->stage->name }}</td>
-                                                    <td class="text-center">
-                                                        @if ($item->approved === null)
-                                                            <span class="label label-warning">Pendiente</span>
-                                                        @else
-                                                            <span
-                                                                class="label {{ $item->approved ? 'label-success' : 'label-danger' }}">
-                                                                {{ $item->approved ? 'Aprobado' : 'No Aprobado' }}
-                                                            </span>
-                                                        @endif
-                                                    </td>
-                                                    <td class="text-center">
-                                                        @if ($item->approved === 1)
-                                                            <a href="{{ route('steps.contact', ['id' => $item->stage_id]) }}"
-                                                                class="btn btn-success sm-b"
-                                                                style="text-decoration: none; margin: 0px">
-                                                                <i class="fa fa-arrow-right"></i>&nbsp;Proceso
-                                                            </a>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                            @forelse ($processes as $process)
+                                <div class="col-lg-4 col-md-6 col-sm-12">
+                                    <div class="panel panel-primary">
+                                        <div class="panel-heading panel-heading-custom">
+                                            <h5 class="panel-title-custom">
+                                                {{ Str::limit($process->name, 26) }}
+                                            </h5>
+                                        </div>
+                                        <div class="panel-body" style="height:120px; background-color: #fff;">
+                                            <p style="text-align: justify; text-justify: inter-word;">
+                                                {{ Str::limit($process->description, 150) }}
+                                            </p>
+                                        </div>
+                                        <div class="panel-footer">
+                                            <div class="pull-right">
+                                                <a href="{{ route('stages.contact', $process->id) }}"
+                                                    class="btn btn-primary sm-b">
+                                                    <i class="fa fa-grav"></i>&nbsp;Ir a etapas
+                                                </a>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            @empty
+                                <div class="col-md-12">
+                                    <p class="text-center">No tienes procesos asignados.</p>
+                                </div>
+                            @endforelse
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>

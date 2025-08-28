@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Admin\Steps;
 
 use App\Canva;
+use App\Models\AlquimiaAgentConnection;
 use App\Models\Step;
 use App\Models\Stage;
 use App\Models\Course;
@@ -13,6 +14,7 @@ use App\Models\Challenge;
 use Livewire\WithPagination;
 use App\Models\InformationForm;
 use App\Models\PresentialActivity;
+use App\Models\ProcessAlquimiaAgent;
 use Illuminate\Support\Facades\DB;
 
 class StepsComponent extends Component
@@ -32,6 +34,8 @@ class StepsComponent extends Component
 
     public $stageId;
 
+    public $alquimiaAgentConnections;
+
     public $processes;
     public $stagesList = [];
     public $stepsList = [];
@@ -39,10 +43,13 @@ class StepsComponent extends Component
     public $stageM;
     public $stepM;
 
+    public $selectedAlquimiaConnection;
+
     public function mount($id)
     {
         $this->stageId = $id;
         $this->processes = Process::all();
+        $this->alquimiaAgentConnections = AlquimiaAgentConnection::all();
     }
 
     public function render()
@@ -146,6 +153,18 @@ class StepsComponent extends Component
                 $canva->update();
                 break;
 
+            case 'AL':
+                $agent = new ProcessAlquimiaAgent();
+                $agent->name = $this->name;
+                $agent->description = $this->description;
+                $agent->step_id = $step->id;
+                if ($this->selectedAlquimiaConnection) {
+                    $agent->alquimia_connection_id = $this->selectedAlquimiaConnection;
+                }
+                $agent->save();
+
+                break;
+
             default:
                 break;
         }
@@ -156,7 +175,6 @@ class StepsComponent extends Component
 
     public function edit($id)
     {
-
         $this->stepId = $id;
 
         $step = Step::find($id);
@@ -166,18 +184,25 @@ class StepsComponent extends Component
         $this->available_from = $step->available_from;
         $this->step_type = $step->step_type;
         $this->stageId = $step->stage_id;
+
+        if ($this->step_type === 'AL') {
+            $agent = ProcessAlquimiaAgent::where('step_id', $step->id)->first();
+            if ($agent) {
+                $this->selectedAlquimiaConnection = $agent->alquimia_connection_id;
+            }
+        }
     }
+
 
     public function update()
     {
-
         $this->validate([
             'name' => [
                 'required',
                 function ($attribute, $value, $fail) {
                     $existingStep = Step::where('name', $value)
                         ->where('stage_id', $this->stageId)
-                        ->where('id', '!=', $this->stepId) //
+                        ->where('id', '!=', $this->stepId)
                         ->first();
                     if ($existingStep) {
                         $fail('El nombre del paso ya existe en esta etapa.');
@@ -200,25 +225,57 @@ class StepsComponent extends Component
             ],
             'available_from' => 'required|date',
             'step_type' => 'required',
+            'selectedAlquimiaConnection' => [
+                function ($attribute, $value, $fail) {
+                    if ($this->step_type === 'AL' && empty($value)) {
+                        $fail('Debe seleccionar una conexión de Alquimia.');
+                    }
+                }
+            ],
         ], [], [
             'name' => 'nombre',
             'description' => 'descripción',
             'order' => 'orden',
             'available_from' => 'Disponible desde',
-            'step_type' => 'tipo de paso',
+            'step_type' => 'tipo',
+            'selectedAlquimiaConnection' => 'conexión de Alquimia',
         ]);
 
         $step = Step::find($this->stepId);
         $step->name = $this->name;
         $step->description = $this->description;
         $step->available_from = $this->available_from;
-        //$step->order = $this->order;
         $step->step_type = $this->step_type;
         $step->update();
+
+        switch ($this->step_type) {
+            case 'AL':
+                $agent = ProcessAlquimiaAgent::where('step_id', $step->id)->first();
+                if ($agent) {
+                    $agent->name = $this->name;
+                    $agent->description = $this->description;
+                    $agent->alquimia_connection_id = $this->selectedAlquimiaConnection;
+                    $agent->save();
+                }
+                break;
+
+            case 'LZ':
+                $canvaUpdate = InformationForm::where('step_id', $step->id)->first();
+                if ($canvaUpdate) {
+                    $canvaUpdate->name = $this->name;
+                    $canvaUpdate->description = $this->description;
+                    $canvaUpdate->save();
+                }
+                break;
+
+            default:
+                break;
+        }
 
         $this->emit('alert', ['type' => 'success', 'message' => 'Paso actualizado correctamente']);
         $this->cancel();
     }
+
 
     public function delete($id)
     {
@@ -440,6 +497,26 @@ class StepsComponent extends Component
                             }
                         }
                     });
+                    break;
+                case 'AL':
+                    $agents = ProcessAlquimiaAgent::where('step_id', $step->id)->get();
+
+                    DB::transaction(function () use ($agents, $newStep) {
+                        foreach ($agents as $agentOrigin) {
+                            // Duplicamos el agente
+                            $newAgent = $agentOrigin->replicate();
+                            $newAgent->step_id = $newStep->id;
+                            $newAgent->save();
+
+                            // Duplicamos sus preguntas
+                            foreach ($agentOrigin->questions as $questionOrigin) {
+                                $newQuestion = $questionOrigin->replicate();
+                                $newQuestion->process_alquimia_agent_id = $newAgent->id;
+                                $newQuestion->save();
+                            }
+                        }
+                    });
+
                     break;
 
                 default:

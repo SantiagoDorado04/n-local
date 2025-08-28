@@ -83,7 +83,7 @@
                                                                         class="btn btn-primary sm-b">
                                                                         Iniciar
                                                                         Lección</button>
-                                                                        {{-- <button wire:click="lessonCompleted"
+                                                                    {{-- <button wire:click="lessonCompleted"
                                                                         class="btn btn-success sm-b">
                                                                         Marcar como completada</button> --}}
                                                                 @endif
@@ -136,7 +136,51 @@
                                                                     {{ $currentLesson->duration }} minutos</p>
                                                             </div>
                                                         @endif
-                                                        @if ($currentLesson->video)
+                                                        @if ($protectedPlayerHtml)
+                                                            <div class="col-lg-12">
+                                                                <div class="embed-responsive embed-responsive-16by9">
+                                                                    {!! $protectedPlayerHtml !!}
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-12" style="margin-bottom: 0px">
+                                                                <p class="pull-right">
+                                                                    <i class="fa fa-clock-o"></i> Duración:
+                                                                    {{ $currentLesson->duration }} minutos
+                                                                </p>
+                                                            </div>
+                                                            @push('scripts')
+                                                                <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+                                                                <script>
+                                                                    window.addEventListener('queue-hls-init', function(e) {
+                                                                        const video = document.getElementById('publitio-player');
+                                                                        const urlStream = e.detail.url_stream;
+                                                                        const urlEmbed = e.detail.url_embed;
+
+                                                                        if (!video || !urlStream) return;
+
+                                                                        try {
+                                                                            if (Hls.isSupported()) {
+                                                                                var hls = new Hls();
+                                                                                hls.loadSource(urlStream);
+                                                                                hls.attachMedia(video);
+                                                                            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                                                                                // Safari nativo
+                                                                                video.src = urlStream;
+                                                                            } else {
+                                                                                throw new Error("Hls.js no soportado");
+                                                                            }
+                                                                        } catch (err) {
+                                                                            console.warn("Fallo HLS, usando iframe de fallback:", err);
+                                                                            if (urlEmbed) {
+                                                                                document.querySelector('.embed-responsive').innerHTML =
+                                                                                    '<iframe src="' + urlEmbed +
+                                                                                    '" frameborder="0" allowfullscreen style="width:100%;height:480px;"></iframe>';
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                </script>
+                                                            @endpush
+                                                        @elseif ($currentLesson->video)
                                                             <div class="col-lg-12">
                                                                 <div class="embed-responsive embed-responsive-16by9">
                                                                     {!! $currentLesson->video !!}
@@ -144,8 +188,8 @@
                                                             </div>
                                                             <div class="col-lg-12" style="margin-bottom: 0px">
                                                                 <p class="pull-right"><i class="fa fa-clock-o"></i>
-                                                                    Duración:
-                                                                    {{ $currentLesson->duration }} minutos</p>
+                                                                    Duración: {{ $currentLesson->duration }} minutos
+                                                                </p>
                                                             </div>
                                                         @endif
                                                     </div>

@@ -69,12 +69,12 @@
 
                                         </div>
                                     </div>
-                                    <div class="col-lg-12 text-right text-end">
+                                    {{-- <div class="col-lg-12 text-right text-end">
                                         <button type="button" class="btn btn-warning sm-b "
                                             wire:click="generateDeepSeekText('{{ $question->text }}', {{ $question->id }})">
                                             <i class="voyager-lightbulb"></i>Generar Texto con IA
                                         </button>
-                                    </div>
+                                    </div> --}}
                                 @endforeach
                                 <div class="col-lg-12 text-center">
                                     @if (!$stageActive)

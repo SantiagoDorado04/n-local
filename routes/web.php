@@ -73,6 +73,7 @@ use App\Http\Livewire\Admin\SelfManagement\ProjectsCompanyComponent;
 use App\Http\Livewire\Contacts\Mentoring\MentoringContactsComponent;
 use App\Http\Controllers\Admin\Proposals\ProposalTemplatesController;
 use App\Http\Controllers\TestJobController;
+use App\Http\Livewire\Admin\AlquimiaAgentConnections\AlquimiaAgentConnectionsComponent;
 use App\Http\Livewire\Admin\LMS\Courses\CoursesParticipantsComponent;
 use App\Http\Livewire\Admin\CommercialAction\SocialQuestionsComponent;
 use App\Http\Livewire\Admin\CommercialForms\CommercialOptionComponent;
@@ -158,15 +159,18 @@ use App\Http\Livewire\Admin\OnlineRegistrationCourses\Sessions\OnlineRegistratio
 use App\Http\Livewire\Admin\OnlineRegistrationCourses\Sessions\OnlineRegistrationSessionContents\VideosContents\OnlineRegistrationVideosContentsComponent;
 use App\Http\Livewire\Admin\OnlineRegistrationCourses\Sessions\OnlineRegistrationSessionContents\VideosContents\OnlineRegistrationVideosContentsCreateComponent;
 use App\Http\Livewire\Admin\OnlineRegistrationCourses\Sessions\OnlineRegistrationSessionContents\VideosContents\OnlineRegistrationVideosContentsEditComponent;
-use App\Http\Livewire\Admin\ProcessAlquimiaAgent\Sessions\OnlineRegistrationSessionContents\VideosContents\OnlineRegistrationVideosContentsPreviewComponent;
+use App\Http\Livewire\Admin\OnlineRegistrationCourses\Sessions\OnlineRegistrationSessionContents\VideosContents\OnlineRegistrationVideosContentsPreviewComponent;
 use App\Http\Livewire\Admin\OnlineRegistrations\OnlineRegistrationChannelComponent;
 use App\Http\Livewire\Admin\OnlineRegistrations\OnlineRegistrationExternalExecutionsComponent;
+use App\Http\Livewire\Admin\ProcessAlquimiaAgent\ProcessAlquimiaAgentComponent;
+use App\Http\Livewire\Admin\ProcessAlquimiaAgent\ProcessAlquimiaAgentListComponent;
 use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\MyOnlineRegistrationCoursesComponent;
 use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\OrMyCourseSessions\OrMyCharacterizations\OrMyCharacterizationsComponent;
 use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\OrMyCourseSessions\OrMyCharacterizations\OrMyCharacterizationsDiligences\OrMyCharacterizationsDiligencesComponent;
 use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\OrMyCourseSessions\OrMyCourseSessionsComponent;
 use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\OrMyCourseSessions\OrMySessionContents\OrMySessionContentsComponent;
-use App\Http\Livewire\Admin\MyOnlineRegistrationCourses\OrMyCourseSessions\OrMySessionContents\OrMySessionContentsComponent;
+use App\Http\Livewire\Contacts\ProcessAlquimiaAgents\ProcessAlquimiaAgentsContactsComponent;
+use App\Http\Livewire\Contacts\StagesContactComponent;
 use App\Models\OnlineRegistration;
 use App\Models\OnlineRegistrationChannel;
 use App\Models\OnlineRegistrationCourse;
@@ -371,11 +375,14 @@ Route::group(['prefix' => 'admin'], function () {
 
         //AlquimIA Agent
 
+        Route::get('alquimia-connections', AlquimiaAgentConnectionsComponent::class)->name('alquimia-connections');
         Route::get('step/{id}/alquimia-agent', ProcessAlquimiaAgentComponent::class)->name('process-alquimia-agent');
+        Route::get('alquimia-agent/{id}/list', ProcessAlquimiaAgentListComponent::class)->name('process-alquimia-agent-list');
 
         //Contacts
         Route::get('my-processes', ProcessesContactComponent::class)->name('processes.contact');
-        Route::get('my-processes/{id}/steps', StepsContactComponent::class)->name('steps.contact');
+        Route::get('my-processes/{id}/stages', StagesContactComponent::class)->name('stages.contact');
+        Route::get('my-stages/{id}/steps', StepsContactComponent::class)->name('steps.contact');
 
         Route::get('steps-contacts/{id}/information-form', InformationFormsContactsComponent::class)->name('information-forms.contact');
         Route::get('steps-contacts/{id}/challenges', ChallengesContactsComponent::class)->name('challenges.contact');
@@ -384,6 +391,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('steps-contacts/{id}/courses', LmsComponent::class)->name('lms.contact');
         Route::get('steps-contacts/{id}/canvas', CanvasContactsComponent::class)->name('canvas.contact');
         Route::get('steps-contacts/{id}/video-interviews', InterviewsContactsComponent::class)->name('video-interviews.contact');
+        Route::get('steps-contacts/{id}/alquimia-agent', ProcessAlquimiaAgentsContactsComponent::class)->name('alquimia-agent.contact');
 
         Route::get('courses/{id}/content', LmsContentComponent::class)->name('lms-content.contact');
 

@@ -10,22 +10,30 @@ use Illuminate\Support\Facades\Auth;
 
 class StepsContactComponent extends Component
 {
-    public $contactId, $stageId, $contactProcessId, $processId;
+    public $contactId;
+    public $stageId;
+    public $contactStageId;
+    public $processId;
     public $description;
 
     public function mount($id)
     {
-
         $user = Auth::user();
-        $contact = Contact::where('user_id', '=', $user->id)->first();
+
+        // Buscamos el contacto asociado al usuario
+        $contact = Contact::where('user_id', $user->id)->firstOrFail();
         $this->contactId = $contact->id;
 
-        $contactProcess = ContactsStage::with('stage.process')->where('stage_id','=',$id)->where('contact_id','=',$this->contactId)->first();
+        // Verificamos que ese contacto realmente esté inscrito en la etapa
+        $contactStage = ContactsStage::with('stage.process')
+            ->where('stage_id', $id)
+            ->where('contact_id', $this->contactId)
+            ->firstOrFail();
 
-        $this->contactProcessId = $contactProcess->id;
-
-        $this->stageId = $id;
-        $this->processId = $contactProcess->stage->process->id;
+        // Guardamos referencias para el render
+        $this->contactStageId = $contactStage->id;
+        $this->stageId = $contactStage->stage->id;
+        $this->processId = $contactStage->stage->process->id;
     }
 
     public function render()
@@ -39,7 +47,11 @@ class StepsContactComponent extends Component
 
     public function show($id)
     {
-        $this->description = Step::findOrFail($id)->description;
+        $step = Step::where('id', $id)
+            ->where('stage_id', $this->stageId) // Seguridad extra: paso debe pertenecer a la etapa
+            ->firstOrFail();
+
+        $this->description = $step->description;
     }
 
     public function cancel()
@@ -50,12 +62,15 @@ class StepsContactComponent extends Component
 
     private function getSteps()
     {
-        return Step::where('stage_id', $this->stageId)->orderBy('order','asc')->get();
+        // Solo pasos de la etapa a la que el usuario está inscrito
+        return Step::where('stage_id', $this->stageId)
+            ->orderBy('order', 'asc')
+            ->get();
     }
 
     private function getStage()
     {
-        return ContactsStage::find($this->contactProcessId)->stage;
+        return ContactsStage::with('stage')->findOrFail($this->contactStageId)->stage;
     }
 
     private function getProcess()

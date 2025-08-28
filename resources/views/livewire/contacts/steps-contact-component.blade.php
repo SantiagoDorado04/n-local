@@ -11,6 +11,9 @@
                 <a href="{{ route('processes.contact') }}">Procesos</a>
             </li>
             <li>
+                <a href="{{ route('stages.contact', ['id' => $process->id]) }}">Etapas</a>
+            </li>
+            <li>
                 Pasos
             </li>
         </ol>
@@ -21,7 +24,7 @@
     @section('page_header')
         <div class="container-fluid">
             <h1 class="page-title">
-                <i class="fa fa-puzzle-piece"></i> Pasos proceso "{{ $stage->process->name }}"
+                <i class="fa fa-puzzle-piece"></i> Pasos etapa "{{ $stage->name }}" del proceso "{{ $process->name }}"
             </h1>
         </div>
     @stop
@@ -140,6 +143,12 @@
                                                             <a class="btn btn-success sm-b"
                                                                 href="{{ route('canvas.contact', ['id' => $step->id]) }}"><i
                                                                     class="fa fa-arrow-right"></i>&nbsp;Lienzo</a>
+                                                        @break
+
+                                                        @case('AL')
+                                                            <a class="btn btn-success sm-b"
+                                                                href="{{ route('alquimia-agent.contact', ['id' => $step->id]) }}"><i
+                                                                    class="fa fa-arrow-right"></i>&nbsp;Agente AlquimIA</a>
                                                         @break
 
                                                         @default

@@ -224,5 +224,5 @@ class CanvasContactsComponent extends Component
         $this->answers[$questionId] = $generatedText;
     }
 
-    
+
 }

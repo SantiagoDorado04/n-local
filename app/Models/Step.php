@@ -46,4 +46,9 @@ class Step extends Model
     {
         return $this->hasOne(Interview::class, 'step_id');
     }
+
+    public function processAlquimiaAgent()
+    {
+        return $this->hasMany(ProcessAlquimiaAgent::class, 'step_id');
+    }
 }

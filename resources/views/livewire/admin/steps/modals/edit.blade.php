@@ -60,6 +60,23 @@
                                 <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
+
+                        @if ($step_type === 'AL')
+                            <div class="form-group">
+                                <label class="is-required"><strong>Conexión Alquimia:</strong></label>
+                                <select class="form-control" wire:model="selectedAlquimiaConnection">
+                                    <option value="">-- Seleccione conexión --</option>
+                                    @foreach ($alquimiaAgentConnections as $connection)
+                                        <option value="{{ $connection->id }}">
+                                            {{ $connection->name ?? ($connection->description ?? 'Sin nombre') }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('selectedAlquimiaConnection')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

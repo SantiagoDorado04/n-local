@@ -29,6 +29,15 @@
                             @enderror
                         </div>
                         <div class="form-group">
+                            <label><strong>Enlace video protegido (dejar vacio para mantener el mismo):
+                                </strong></label>
+                            <input type="text" class="form-control" wire:model="protectedVideo"
+                                placeholder="URL del video">
+                            @error('protectedVideo')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+                        <div class="form-group">
                             <label><strong>Embebido video:</strong></label>
                             <input type="text" class="form-control" wire:model="video" placeholder="URL del video">
                             @error('video')

@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Admin\LMS\Lessons;
 
 use App\Models\Topic;
 use App\Models\Lesson;
+use Illuminate\Support\Facades\Http;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
@@ -17,6 +18,7 @@ class LessonsComponent extends Component
     public $title,
         $description,
         $video,
+        $protectedVideo,
         $file,
         $content,
         $order,
@@ -67,6 +69,7 @@ class LessonsComponent extends Component
             'title' => 'required',
             'description' => 'required',
             'video' => 'nullable',
+            'protectedVideo' => 'nullable',
             'file' => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf|max:51200',
             'content' => 'nullable',
             'order' => 'required|integer',
@@ -78,8 +81,9 @@ class LessonsComponent extends Component
             'title' => 'título',
             'description' => 'descripción',
             'video' => 'video',
+            'protectedVideo' => 'video protegido',
             'file' => 'archivo',
-            'content' => 'content',
+            'content' => 'contenido',
             'order' => 'orden',
             'hours' => 'horas',
             'minutes' => 'minutos',
@@ -91,24 +95,38 @@ class LessonsComponent extends Component
         $lesson->title = $this->title;
         $lesson->description = $this->description;
         $lesson->video = $this->video;
+
+        if (!empty($this->protectedVideo)) {
+            $parsedUrl = parse_url($this->protectedVideo);
+            $path = $parsedUrl['path'] ?? '';
+            $pathParts = explode('/', trim($path, '/'));
+            $lastPart = end($pathParts);
+            $publicId = preg_replace('/\.html$/', '', $lastPart);
+            array_pop($pathParts);
+            $folder = implode('/', $pathParts);
+            $folder = str_replace('file/', '', $folder);
+
+            $fileInfo = app(\App\Services\PublitioService::class)->findByPublicId($publicId, $folder);
+
+            if ($fileInfo && isset($fileInfo['id'])) {
+                $lesson->protected_video = $fileInfo['id']; // Guardar el id interno correcto
+            }
+        }
+
+
         if ($this->file) {
             $originalFileName = $this->file->getClientOriginalName();
             $filePath = $this->file->storeAs('public/files', $originalFileName);
             $lesson->file = Storage::url($filePath);
         }
+
         $lesson->topic_id = $this->topicId;
         $lesson->content = $this->content;
         $lesson->order = $this->order;
 
-        if (strlen($this->hours) === 1) {
-            $this->hours = '0' . $this->hours;
-        }
-        if (strlen($this->minutes) === 1) {
-            $this->minutes = '0' . $this->minutes;
-        }
-        if (strlen($this->seconds) === 1) {
-            $this->seconds = '0' . $this->seconds;
-        }
+        if (strlen($this->hours) === 1) $this->hours = '0' . $this->hours;
+        if (strlen($this->minutes) === 1) $this->minutes = '0' . $this->minutes;
+        if (strlen($this->seconds) === 1) $this->seconds = '0' . $this->seconds;
         $lesson->duration = $this->hours . ':' . $this->minutes . ':' . $this->seconds;
 
         $lesson->save();
@@ -116,6 +134,7 @@ class LessonsComponent extends Component
         $this->emit('alert', ['type' => 'success', 'message' => 'Lección agregada correctamente']);
         $this->cancel();
     }
+
 
     public function edit($id)
     {
@@ -126,6 +145,7 @@ class LessonsComponent extends Component
 
         $this->title = $lesson->title;
         $this->description = $lesson->description;
+        $this->protectedVideo = '';
         $this->video = $lesson->video;
         $this->currentFile = $lesson->file;
         $this->file = null;
@@ -151,7 +171,7 @@ class LessonsComponent extends Component
             $this->minutes = '0';
             $this->seconds = '0';
         }
-        
+
         $this->published = $lesson->published;
     }
 
@@ -166,6 +186,7 @@ class LessonsComponent extends Component
         $this->validate([
             'title' => 'required',
             'description' => 'required',
+            'protectedVideo' => 'nullable',
             'video' => 'nullable',
             'file' => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf|max:51200',
             'content' => 'nullable',
@@ -177,6 +198,7 @@ class LessonsComponent extends Component
         ], [], [
             'title' => 'título',
             'description' => 'descripción',
+            'protectedVideo' => 'video protegido',
             'video' => 'video',
             'file' => 'archivo',
             'content' => 'content',
@@ -191,6 +213,24 @@ class LessonsComponent extends Component
         $lesson->title = $this->title;
         $lesson->description = $this->description;
         $lesson->video = $this->video;
+
+        if (!empty($this->protectedVideo)) {
+            $parsedUrl = parse_url($this->protectedVideo);
+            $path = $parsedUrl['path'] ?? '';
+            $pathParts = explode('/', trim($path, '/'));
+            $lastPart = end($pathParts);
+            $publicId = preg_replace('/\.html$/', '', $lastPart);
+            array_pop($pathParts);
+            $folder = implode('/', $pathParts);
+            $folder = str_replace('file/', '', $folder);
+            $fileInfo = app(\App\Services\PublitioService::class)->findByPublicId($publicId, $folder);
+
+            if ($fileInfo && isset($fileInfo['id'])) {
+                $lesson->protected_video = $fileInfo['id'];
+            }
+        }
+
+
         if ($this->file) {
             $originalFileName = $this->file->getClientOriginalName();
             $filePath = $this->file->storeAs('public/files', $originalFileName);
@@ -249,6 +289,7 @@ class LessonsComponent extends Component
         $this->seconds = 00;
         $this->published = '';
         $this->currentFile = '';
+        $this->protectedVideo = '';
     }
 
     public function updateOrder($order)

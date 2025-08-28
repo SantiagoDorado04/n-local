@@ -79,6 +79,7 @@
                                                 <th><small>Título</small></th>
                                                 <th><small>Descripción</small></th>
                                                 <th><small>Video</small></th>
+                                                <th><small>Video protegido</small></th>
                                                 <th><small>Archivo</small></th>
                                                 <th><small>Contenido</small></th>
                                                 <th><small>Tema</small></th>
@@ -93,6 +94,7 @@
                                                     <td>{{ $lesson->title }}</td>
                                                     <td>{{ $lesson->description }}</td>
                                                     <td>{{ $lesson->video }}</td>
+                                                    <td>{{ $lesson->protected_video }}</td>
                                                     <td>{{ $lesson->file }}</td>
                                                     <td>
                                                         @if ($lesson->content)

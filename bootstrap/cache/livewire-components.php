@@ -1,4 +1,5 @@
 <?php return array (
+  'admin.alquimia-agent-connections.alquimia-agent-connections-component' => 'App\\Http\\Livewire\\Admin\\AlquimiaAgentConnections\\AlquimiaAgentConnectionsComponent',
   'admin.announcements.announcement-component' => 'App\\Http\\Livewire\\Admin\\Announcements\\AnnouncementComponent',
   'admin.announcements.announcement-form-component' => 'App\\Http\\Livewire\\Admin\\Announcements\\AnnouncementFormComponent',
   'admin.announcements.announcement-form-option-component' => 'App\\Http\\Livewire\\Admin\\Announcements\\AnnouncementFormOptionComponent',
@@ -100,6 +101,7 @@
   'admin.presential-activities.presential-activities-groups-component' => 'App\\Http\\Livewire\\Admin\\PresentialActivities\\PresentialActivitiesGroupsComponent',
   'admin.presential-activities.presential-activities-participants-component' => 'App\\Http\\Livewire\\Admin\\PresentialActivities\\PresentialActivitiesParticipantsComponent',
   'admin.process-alquimia-agent.process-alquimia-agent-component' => 'App\\Http\\Livewire\\Admin\\ProcessAlquimiaAgent\\ProcessAlquimiaAgentComponent',
+  'admin.process-alquimia-agent.process-alquimia-agent-list-component' => 'App\\Http\\Livewire\\Admin\\ProcessAlquimiaAgent\\ProcessAlquimiaAgentListComponent',
   'admin.processes.processes-component' => 'App\\Http\\Livewire\\Admin\\Processes\\ProcessesComponent',
   'admin.products-services.products-services-component' => 'App\\Http\\Livewire\\Admin\\ProductsServices\\ProductsServicesComponent',
   'admin.profile.companies-profile-component' => 'App\\Http\\Livewire\\Admin\\Profile\\CompaniesProfileComponent',
@@ -145,7 +147,9 @@
   'contacts.my-online-registration-courses.or-my-course-sessions.or-my-course-sessions-component' => 'App\\Http\\Livewire\\Contacts\\MyOnlineRegistrationCourses\\OrMyCourseSessions\\OrMyCourseSessionsComponent',
   'contacts.my-online-registration-courses.or-my-course-sessions.or-my-session-contents.or-my-session-contents-component' => 'App\\Http\\Livewire\\Contacts\\MyOnlineRegistrationCourses\\OrMyCourseSessions\\OrMySessionContents\\OrMySessionContentsComponent',
   'contacts.presential-activities.contacts-activities-component' => 'App\\Http\\Livewire\\Contacts\\PresentialActivities\\ContactsActivitiesComponent',
+  'contacts.process-alquimia-agents.process-alquimia-agents-contacts-component' => 'App\\Http\\Livewire\\Contacts\\ProcessAlquimiaAgents\\ProcessAlquimiaAgentsContactsComponent',
   'contacts.processes-contact-component' => 'App\\Http\\Livewire\\Contacts\\ProcessesContactComponent',
+  'contacts.stages-contact-component' => 'App\\Http\\Livewire\\Contacts\\StagesContactComponent',
   'contacts.steps-contact-component' => 'App\\Http\\Livewire\\Contacts\\StepsContactComponent',
   'contacts.widgets.widgets-contacts-component' => 'App\\Http\\Livewire\\Contacts\\Widgets\\WidgetsContactsComponent',
   'interviews.interviews-answers-component' => 'App\\Http\\Livewire\\Interviews\\InterviewsAnswersComponent',

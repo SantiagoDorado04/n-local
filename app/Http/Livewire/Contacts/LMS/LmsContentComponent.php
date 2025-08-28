@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\Lesson;
 use App\ContactsCourse;
 use App\LessonProgress;
+use App\Services\PublitioService;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 
@@ -26,6 +27,10 @@ class LmsContentComponent extends Component
     protected $listeners = ['lessonCompleted', 'updateProgress'];
 
     public $stageActive = false;
+
+    public $protectedPlayerHtml = null;
+
+    protected $publitio;
 
     public function mount($id)
     {
@@ -72,24 +77,49 @@ class LmsContentComponent extends Component
         $this->currentLesson = Lesson::find($this->currentLessonId);
 
         if ($this->currentLesson) {
-            
+
             if (is_numeric($this->currentLesson->duration)) {
-                
+
                 $this->duration = $this->currentLesson->duration / 60;
             } elseif (preg_match('/^\d{2}:\d{2}:\d{2}$/', $this->currentLesson->duration)) {
-                
+
                 list($hours, $minutes, $seconds) = explode(':', $this->currentLesson->duration);
                 $this->duration = ($hours * 3600) + ($minutes * 60) + $seconds;
             } else {
-                
+
                 $this->duration = 0;
             }
         } else {
             $this->duration = 0;
         }
-        
-        
+
+
         $this->progress = 0;
+
+        if ($this->currentLesson && $this->currentLesson->protected_video) {
+            try {
+                $fileInfo = $this->publitio->getFileInfo($this->currentLesson->protected_video);
+
+                if ($fileInfo) {
+                    if (!empty($fileInfo['url_embed'])) {
+                        $this->protectedPlayerHtml = '<iframe src="' . $fileInfo['url_embed'] . '"
+                    frameborder="0" allowfullscreen style="width:100%;height:480px;"></iframe>';
+                    } elseif (!empty($fileInfo['url_stream'])) {
+                        $this->protectedPlayerHtml = '
+                    <video id="publitio-player" width="100%" height="480" controls playsinline>
+                        <source src="' . $fileInfo['url_stream'] . '" type="application/x-mpegURL">
+                        Tu navegador no soporta streaming.
+                    </video>';
+                    } else {
+                        $this->protectedPlayerHtml = '<p class="text-danger">No se encontró URL de reproducción.</p>';
+                    }
+                } else {
+                    $this->protectedPlayerHtml = '<p class="text-danger">No se pudo obtener información del video.</p>';
+                }
+            } catch (\Exception $e) {
+                $this->protectedPlayerHtml = '<p class="text-danger">Error al cargar video protegido.</p>';
+            }
+        }
     }
 
     public function render()
@@ -106,41 +136,43 @@ class LmsContentComponent extends Component
 
     public function loadLesson($lessonId)
     {
-/*         $currentTime = now()->timestamp;
-        $elapsedTime = $currentTime - $this->lessonStartTime;
-        $remainingTime = max($this->currentLesson->duration - ($elapsedTime / 60), 0); */
-
         $this->currentLessonId = $lessonId;
         $this->currentLesson = Lesson::find($lessonId);
 
-        if ($this->currentLesson) {
-            
-            if (is_numeric($this->currentLesson->duration)) {
-                
-                $this->duration = $this->currentLesson->duration / 60;
-            } elseif (preg_match('/^\d{2}:\d{2}:\d{2}$/', $this->currentLesson->duration)) {
-                
-                list($hours, $minutes, $seconds) = explode(':', $this->currentLesson->duration);
-                $this->duration = ($hours * 3600) + ($minutes * 60) + $seconds;
-            } else {
-                
-                $this->duration = 0;
+        $this->protectedPlayerHtml = null;
+
+        if ($this->currentLesson && $this->currentLesson->protected_video) {
+            try {
+                $fileInfo = $this->publitio->getFileInfo($this->currentLesson->protected_video);
+
+                if ($fileInfo) {
+                    if (!empty($fileInfo['url_embed'])) {
+                        $this->protectedPlayerHtml = '<iframe src="' . $fileInfo['url_embed'] . '"
+                        frameborder="0" allowfullscreen style="width:100%;height:480px;"></iframe>';
+                    } elseif (!empty($fileInfo['url_stream'])) {
+                        $this->protectedPlayerHtml = '
+                        <video id="publitio-player" width="100%" height="480" controls playsinline>
+                            <source src="' . $fileInfo['url_stream'] . '" type="application/x-mpegURL">
+                            Tu navegador no soporta streaming.
+                        </video>';
+                    } else {
+                        $this->protectedPlayerHtml = '<p class="text-danger">No se encontró URL de reproducción.</p>';
+                    }
+                } else {
+                    $this->protectedPlayerHtml = '<p class="text-danger">No se pudo obtener información del video.</p>';
+                }
+            } catch (\Exception $e) {
+                $this->protectedPlayerHtml = '<p class="text-danger">Error al cargar video protegido.</p>';
             }
-        } else {
-            $this->duration = 0;
         }
-        
-        
+
         $this->progress = 0;
-
         $this->emit('restart', $this->duration);
-
     }
 
     public function resetProgress()
     {
         $this->progress = 0;
-
     }
 
     public function startLesson()
@@ -199,5 +231,10 @@ class LmsContentComponent extends Component
     public function updateProgress($progress)
     {
         $this->progress = $progress;
+    }
+
+    public function boot(PublitioService $publitio)
+    {
+        $this->publitio = $publitio;
     }
 }
