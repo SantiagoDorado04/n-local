@@ -343,6 +343,7 @@ class ProcessAlquimiaAgentsContactsComponent extends Component
     {
         if ($this->currentQuestionId) {
             $this->answers[$this->currentQuestionId] = $this->generatedText;
+            $this->saveAnswers();
         }
 
         // cerramos modal en cliente
