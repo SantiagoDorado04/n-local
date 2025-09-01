@@ -151,6 +151,13 @@
                                                                     class="fa fa-arrow-right"></i>&nbsp;Agente AlquimIA</a>
                                                         @break
 
+                                                        @case('AT')
+                                                            <a class="btn btn-success sm-b"
+                                                                href="{{ route('process-advisor-scheduling.contact', ['id' => $step->id]) }}"><i
+                                                                    class="fa fa-arrow-right"></i>&nbsp;Agendamiento con
+                                                                Asesor</a>
+                                                        @break
+
                                                         @default
                                                     @endswitch
                                                 </div>

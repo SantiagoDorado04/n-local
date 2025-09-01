@@ -42,6 +42,15 @@ class ProcessAlquimiaAgentsContactsComponent extends Component
 
     public $answerToGuide = null;
 
+    // --- NUEVAS PROPIEDADES para el chat dentro del modal ---
+    public $chatKeys = [];           // lista de claves a preguntar (ej: ['nombreEmpresa','nombreProducto'])
+    public $chatIndex = 0;           // índice actual en chatKeys
+    public $chatHistory = [];        // [{type:'bot'|'user', text:'...'}]
+    public $currentMessage = '';     // input del usuario en el chat
+    public $isFinishedChat = false;  // true cuando ya respondió todas las claves
+    public $tempGuideString = '';    // construye la cadena tipo "[$clave] = valor\n" que usará replaceVariables
+    // -------------------------------------------------------
+
     protected $listeners = [
         'generatedTextChanged' => 'handleGeneratedTextChanged',
     ];
@@ -87,41 +96,240 @@ class ProcessAlquimiaAgentsContactsComponent extends Component
 
         // Cargar respuestas existentes
         $this->loadAnswers();
-
-        $contact = Contact::find($this->contactId);
     }
 
-
-
-    public function generateWithAI($questionId, $answerValue)
+    public function openChatModal($questionId)
     {
-        $this->currentQuestionId = $questionId;
+        $this->resetChat(); // limpia cualquier estado previo
 
+        $this->currentQuestionId = $questionId;
         $question = ProcessAlquimiaAgentQuestion::find($questionId);
         if (!$question) {
+            $this->chatHistory[] = ['type' => 'bot', 'text' => 'No se encontró la pregunta.'];
+            $this->isFinishedChat = true;
             return;
         }
 
-        $processedPrompt = $this->replaceVariables($question->prompt, $answerValue);
+        $guide = $question->guide ?? '';
+        $keys = $this->parseGuideToKeys($guide);
+
+        $this->chatKeys = $keys;
+        $this->chatIndex = 0;
+        $this->chatHistory = [];
+
+        if (!empty($this->chatKeys)) {
+            $this->chatHistory[] = [
+                'type' => 'bot',
+                'text' => 'Hola, bienvenido a la generación con IA del agente AlquimIA, por favor ingresa la siguiente información para darte la mejor respuesta y asegurate de tener una buena conexion a internet:'
+            ];
+
+            $first = $this->chatKeys[0];
+            $this->chatHistory[] = [
+                'type' => 'bot',
+                'text' => $first['label'] // ya no usamos humanizeKey
+            ];
+        } else {
+            $this->chatHistory[] = [
+                'type' => 'bot',
+                'text' => 'No se encontraron variables en la guía. Puedes presionar Generar para usar el prompt tal cual.'
+            ];
+            $this->isFinishedChat = true;
+        }
+
+        $this->emit('scrollChatToBottom');
+    }
+
+    private function parseGuideToKeys($guide)
+    {
+        $keys = [];
+
+        if (!$guide) {
+            return $keys;
+        }
+
+        $decoded = json_decode($guide, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            foreach ($decoded as $key => $label) {
+                $keys[] = ['key' => $key, 'label' => $label];
+            }
+            return $keys;
+        }
+
+        // fallback viejo formato
+        preg_match_all('/\[\$(.*?)\]\s*=\s*(.*)/u', $guide, $matches, PREG_SET_ORDER);
+        foreach ($matches as $match) {
+            $keys[] = ['key' => $match[1], 'label' => $match[2] ?? $match[1]];
+        }
+
+        return $keys;
+    }
+
+
+    private function humanizeKey($key)
+    {
+        // Convierte camelCase / snake_case / kebab-case -> "Pretty label"
+        $label = preg_replace('/([a-z])([A-Z])/', '$1 $2', $key); // camelCase -> space
+        $label = str_replace(['_', '-'], ' ', $label);
+        $label = trim($label);
+        $label = mb_convert_case($label, MB_CASE_TITLE, "UTF-8");
+        return $label;
+    }
+
+    public function sendChatAnswer()
+    {
+        $answer = trim($this->currentMessage);
+        if ($answer === '') {
+            return;
+        }
+
+        // Guardamos el mensaje del usuario en el historial
+        $this->chatHistory[] = ['type' => 'user', 'text' => $answer];
+
+        $current = $this->chatKeys[$this->chatIndex] ?? null;
+        if ($current) {
+            // Añadimos a la cadena temporal que usará replaceVariables
+            $this->tempGuideString .= '[$' . $current['key'] . '] = ' . $answer . "\n";
+        }
+
+        $this->currentMessage = '';
+        $this->chatIndex++;
+
+        if ($this->chatIndex < count($this->chatKeys)) {
+            $next = $this->chatKeys[$this->chatIndex];
+            $this->chatHistory[] = [
+                'type' => 'bot',
+                'text' => $next['label'] // Usamos el texto humano del JSON
+            ];
+        } else {
+            // Terminó el recorrido por claves
+            $this->isFinishedChat = true;
+            $this->chatHistory[] = [
+                'type' => 'bot',
+                'text' => 'He recibido todas tus respuestas. Pulsa "Generar" para enviar el prompt a la IA.'
+            ];
+        }
+
+        // Emit para scroll en cliente
+        $this->emit('scrollChatToBottom');
+    }
+
+
+    public function generateFromChat()
+    {
+        if (!$this->currentQuestionId) {
+            $this->chatHistory[] = ['type' => 'bot', 'text' => 'Error interno: falta question id.'];
+            return;
+        }
+
+        $question = ProcessAlquimiaAgentQuestion::find($this->currentQuestionId);
+        if (!$question) {
+            $this->chatHistory[] = ['type' => 'bot', 'text' => 'Error: no se encontró la pregunta.'];
+            return;
+        }
+
+        // Reemplazamos usando la cadena construida por el chat (tempGuideString)
+        $processedPrompt = $this->replaceVariables($question->prompt, $this->tempGuideString);
+
+        // 🔹 Concatenamos contexto previo con preguntas ya respondidas
+        $contextString = "";
+        foreach ($this->questions as $q) {
+            $resp = trim($this->answers[$q->id] ?? '');
+            if ($resp === '' || $resp === '{}' || $resp === '[]') {
+                continue; // saltar respuestas vacías
+            }
+
+            $decoded = json_decode($resp, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $flat = collect($decoded)->map(fn($v, $k) => "$k: $v")->join(", ");
+                $contextString .= "- {$q->text}: {$flat}\n";
+            } else {
+                $contextString .= "- {$q->text}: {$resp}\n";
+            }
+        }
+
+        $contextString = trim($contextString);
+        if ($contextString !== "") {
+            $processedPrompt .= "\n\nTen en cuenta también estas respuestas previas:\n" . $contextString;
+        }
+
 
         $processAlquimiaAgent = ProcessAlquimiaAgent::find($this->processAlquimiaAgentId);
         $connection = $processAlquimiaAgent->alquimiaAgentConnection;
 
         if (!$connection) {
             $this->generatedText = "No hay conexión configurada.";
-        } else {
-            // LLAMA AL SERVICIO -> sin dd()
+            $this->chatHistory[] = ['type' => 'bot', 'text' => 'No hay conexión configurada para enviar la petición a la IA.'];
+            return;
+        }
+        set_time_limit(120);
+        try {
+            $this->chatHistory[] = ['type' => 'bot', 'text' => 'Enviando prompt a la IA...'];
+
+            // Llamada al servicio AI
+            /* dd($processedPrompt); */
+
+            $processedPrompt = str_replace(['“', '”', '‘', '’'], '"', $processedPrompt);
             $result = $this->aiService->generateText($processedPrompt, $connection);
-            $this->generatedText = $result;
+            $this->generatedText = $result ?: '';
+
+            // Emitimos para reflejar en el textarea
+            $this->emit('refreshGeneratedText', $this->generatedText);
+            $this->chatHistory[] = ['type' => 'bot', 'text' => 'Respuesta recibida. Puedes editarla abajo y Aceptar.'];
+
+            $this->emit('scrollChatToBottom');
+        } catch (\Throwable $e) {
+            $this->generatedText = "Error al generar texto: " . $e->getMessage();
+            $this->chatHistory[] = ['type' => 'bot', 'text' => 'Error al llamar al servicio de IA.'];
+        }
+    }
+
+
+    public function resetChat()
+    {
+        $this->chatKeys = [];
+        $this->chatIndex = 0;
+        $this->chatHistory = [];
+        $this->currentMessage = '';
+        $this->isFinishedChat = false;
+        $this->tempGuideString = '';
+        $this->generatedText = '';
+        // Nota: no reseteamos generatedText aquí; se hace en cancel() si quieres.
+        // Si ya hay una pregunta activa, recargamos el flujo desde la primera
+        if ($this->currentQuestionId) {
+            $question = ProcessAlquimiaAgentQuestion::find($this->currentQuestionId);
+            if ($question) {
+                $keys = $this->parseGuideToKeys($question->guide ?? '');
+                $this->chatKeys = $keys;
+                $this->chatIndex = 0;
+
+                if (!empty($this->chatKeys)) {
+                    $firstKey = $this->chatKeys[0];
+                    // firstKey es array ['key'=>'...','label'=>'...']
+                    $this->chatHistory[] = [
+                        'type' => 'bot',
+                        'text' => $firstKey['label'] // usar label (string)
+                    ];
+                } else {
+                    $this->chatHistory[] = [
+                        'type' => 'bot',
+                        'text' => 'No se encontraron variables en la guía. Puedes presionar Generar para usar el prompt tal cual.'
+                    ];
+                    $this->isFinishedChat = true;
+                }
+            }
         }
 
-        sleep(2);
+        $this->emit('scrollChatToBottom');
+    }
 
-        // Emitimos para que el editor del modal lo reciba
-        $this->emit('refreshGeneratedText', $this->generatedText);
 
-        // Abrimos modal desde el cliente (evita race conditions)
-        $this->dispatchBrowserEvent('open-modal', ['id' => 'show-modal']);
+
+    public function generateWithAI($questionId, $answerValue)
+    {
+        // (Mantenemos la función pero por compatibilidad no la usamos desde el botón principal
+        //  porque ahora abrimos el chat; si tienes llamadas externas a este método, podríamos adaptarlo)
+        // Para evitar que se ejecute la IA por error, simplemente redirigimos a openChatModal:
+        $this->openChatModal($questionId);
     }
 
     public function handleGeneratedTextChanged($value)
@@ -144,21 +352,23 @@ class ProcessAlquimiaAgentsContactsComponent extends Component
 
     private function replaceVariables($prompt, $answerValue)
     {
-        // Aquí $answerValue ya es un string, no un array
-        // Si quieres que soporte formato tipo: "[var] = valor"
-        $lines = preg_split('/\r\n|\r|\n/', $answerValue); // separar por saltos de línea
+        // Separamos las respuestas por línea
+        $lines = preg_split('/\r\n|\r|\n/', $answerValue);
 
         foreach ($lines as $item) {
             if (strpos($item, '=') !== false) {
                 [$variable, $value] = array_map('trim', explode('=', $item, 2));
+
+                // Normalizamos para asegurar que sea [$clave]
+                $variable = preg_replace('/^\[\s*\$/', '[$', $variable);
+                $variable = preg_replace('/\s*\]$/', ']', $variable);
+
                 $prompt = str_replace($variable, $value, $prompt);
             }
         }
 
         return $prompt;
     }
-
-
 
     public function loadAnswers()
     {
@@ -173,8 +383,8 @@ class ProcessAlquimiaAgentsContactsComponent extends Component
                 // Si hay respuesta en BD, úsala
                 $this->answers[$question->id] = $existingAnswers[$question->id]->answer;
             } else {
-                // Si no hay respuesta, ponemos el "guide" de la pregunta (si existe)
-                $this->answers[$question->id] = $question->guide ?? '';
+                // Si no hay respuesta, deja el campo vacío
+                $this->answers[$question->id] = '';
             }
         }
     }
@@ -261,6 +471,7 @@ class ProcessAlquimiaAgentsContactsComponent extends Component
         $this->resetErrorBag();
         $this->resetValidation();
         $this->emit('close-modal');
+        $this->resetChat();
     }
 
     public function resetInputFields()
@@ -280,7 +491,7 @@ class ProcessAlquimiaAgentsContactsComponent extends Component
         $question = ProcessAlquimiaAgentQuestion::find($this->answerToGuide);
         if ($question) {
             // Si tiene guide, lo asigna. Si no, lo deja vacío
-            $this->answers[$this->answerToGuide] = $question->guide ?? '';
+            $this->answers[$this->answerToGuide] = '';
         }
 
         $this->cancel();

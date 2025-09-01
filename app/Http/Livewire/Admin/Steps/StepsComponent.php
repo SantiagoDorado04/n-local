@@ -14,6 +14,7 @@ use App\Models\Challenge;
 use Livewire\WithPagination;
 use App\Models\InformationForm;
 use App\Models\PresentialActivity;
+use App\Models\ProcessAdvisorScheduling;
 use App\Models\ProcessAlquimiaAgent;
 use Illuminate\Support\Facades\DB;
 
@@ -43,11 +44,20 @@ class StepsComponent extends Component
     public $stageM;
     public $stepM;
 
+    //Scheduling embed
+    public $schedulingEmbed;
+    public $requiredSteps = [];
+    public $filteredRequiredSteps;
+    public $selectedRequiredSteps = [];
+
     public $selectedAlquimiaConnection;
 
     public function mount($id)
     {
         $this->stageId = $id;
+        $this->filteredRequiredSteps = Step::where('stage_id', $this->stageId)
+            ->whereIn('step_type', ['F', 'CD', 'LZ', 'AL'])
+            ->get();
         $this->processes = Process::all();
         $this->alquimiaAgentConnections = AlquimiaAgentConnection::all();
     }
@@ -165,6 +175,15 @@ class StepsComponent extends Component
 
                 break;
 
+            case 'AT':
+                $processAdvisorScheduling = new ProcessAdvisorScheduling();
+                $processAdvisorScheduling->step_id = $step->id;
+                $processAdvisorScheduling->name = $this->name;
+                $processAdvisorScheduling->embed = $this->schedulingEmbed ?? null;
+                $processAdvisorScheduling->required_steps = json_encode($this->selectedRequiredSteps);
+                $processAdvisorScheduling->save();
+                break;
+
             default:
                 break;
         }
@@ -189,6 +208,16 @@ class StepsComponent extends Component
             $agent = ProcessAlquimiaAgent::where('step_id', $step->id)->first();
             if ($agent) {
                 $this->selectedAlquimiaConnection = $agent->alquimia_connection_id;
+            }
+        }
+
+        if ($this->step_type === 'AT') {
+            $processAdvisorScheduling = ProcessAdvisorScheduling::where('step_id', $step->id)->first();
+            if ($processAdvisorScheduling) {
+                $this->schedulingEmbed = $processAdvisorScheduling->embed;
+                $this->selectedRequiredSteps = $processAdvisorScheduling->required_steps
+                    ? json_decode($processAdvisorScheduling->required_steps, true)
+                    : [];
             }
         }
     }
@@ -256,6 +285,16 @@ class StepsComponent extends Component
                     $agent->description = $this->description;
                     $agent->alquimia_connection_id = $this->selectedAlquimiaConnection;
                     $agent->save();
+                }
+                break;
+
+            case 'AT':
+                $processAdvisorScheduling = ProcessAdvisorScheduling::where('step_id', $step->id)->first();
+                if ($processAdvisorScheduling) {
+                    $processAdvisorScheduling->name = $this->name;
+                    $processAdvisorScheduling->embed = $this->schedulingEmbed;
+                    $processAdvisorScheduling->required_steps = json_encode($this->selectedRequiredSteps);
+                    $processAdvisorScheduling->save();
                 }
                 break;
 

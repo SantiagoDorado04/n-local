@@ -44,7 +44,7 @@ class InformationFormsContactsComponent extends Component
 
         $this->stepId = $this->form->step_id;
 
-        if (Auth::check() && Auth::user()->role_id == 7) {
+        if (Auth::check() && Auth::user()->role_id == 7 || Auth::user()->role_id == 4) {
             $this->count = 2;
             $this->contactId = Auth::user()->contact->id;
         }

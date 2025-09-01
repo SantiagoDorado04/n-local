@@ -125,6 +125,9 @@
                                                         case 'AL':
                                                             $stepType = 'Agente AlquimIA';
                                                             break;
+                                                        case 'AL':
+                                                            $stepType = 'Agente AlquimIA';
+                                                            break;
                                                         default:
                                                             $stepType = 'No definido';
                                                             break;
@@ -215,6 +218,10 @@
                                                             <a class="btn btn-success sm-b"
                                                                 href="{{ route('process-alquimia-agent', ['id' => $step->id]) }}"><i
                                                                     class="voyager-puzzle"></i>&nbsp;Agente AlquimIA</a>
+                                                        @break
+
+                                                        @case('AT')
+                                                            <h5>Agente de Asesoría</h5>
                                                         @break
 
                                                         @case('VE')

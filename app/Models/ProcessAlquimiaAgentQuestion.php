@@ -15,6 +15,7 @@ class ProcessAlquimiaAgentQuestion extends Model
         'text',
         'prompt',
         'guide',
+        'contexts',
         'position',
         'process_alquimia_agent_id',
     ];

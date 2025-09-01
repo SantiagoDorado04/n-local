@@ -140,3 +140,29 @@
         </div>
     </div>
 </div>
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script>
+        document.addEventListener('livewire:load', function() {
+            const el = document.getElementById('sortable-guide');
+            Sortable.create(el, {
+                animation: 150,
+                onEnd: function(evt) {
+                    let order = [];
+                    el.querySelectorAll('tr').forEach(tr => {
+                        order.push(tr.dataset.id);
+                    });
+                    Livewire.emit('reorderGuideFields', order);
+                }
+            });
+        });
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                toastr.success("Variable copiada: " + text);
+            }, function(err) {
+                alert("No se pudo copiar la variable");
+            });
+        }
+    </script>
+@endpush

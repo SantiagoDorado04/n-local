@@ -18,18 +18,30 @@ class AIService
     {
         // Reemplazar [$message] en el request_body con el prompt real
         $bodyTemplate = $connection->request_body;
-        $bodyJson = str_replace('[$message]', $prompt, $bodyTemplate);
+        $escapedPrompt = json_encode($prompt, JSON_UNESCAPED_UNICODE);
+        $bodyJson = str_replace('"[$message]"', $escapedPrompt, $bodyTemplate);
         $body = json_decode($bodyJson, true);
 
         if (!$body) {
             throw new \Exception("El request_body no es un JSON válido.");
         }
 
+        /* dd([
+            'body' => $body,
+            'url' => $connection->url,
+            'headers' => [
+                'Authorization' => 'Bearer ' . $connection->apikey,
+            ]
+        ]); */
+
         // Llamada a la API
         $response = Http::withHeaders([
-            'Content-Type'  => 'application/json',
             'Authorization' => 'Bearer ' . $connection->apikey,
-        ])->post($connection->url, $body);
+        ])
+            ->timeout(120)      // ⏱️ aumenta el límite de Guzzle a 120s
+            ->asJson()          // 🚀 asegura que el body se envía como JSON
+            ->timeout(80)
+            ->post($connection->url, $body);
 
         $rawResponse = $response->body();
 

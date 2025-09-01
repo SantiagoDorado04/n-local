@@ -147,6 +147,7 @@
   'contacts.my-online-registration-courses.or-my-course-sessions.or-my-course-sessions-component' => 'App\\Http\\Livewire\\Contacts\\MyOnlineRegistrationCourses\\OrMyCourseSessions\\OrMyCourseSessionsComponent',
   'contacts.my-online-registration-courses.or-my-course-sessions.or-my-session-contents.or-my-session-contents-component' => 'App\\Http\\Livewire\\Contacts\\MyOnlineRegistrationCourses\\OrMyCourseSessions\\OrMySessionContents\\OrMySessionContentsComponent',
   'contacts.presential-activities.contacts-activities-component' => 'App\\Http\\Livewire\\Contacts\\PresentialActivities\\ContactsActivitiesComponent',
+  'contacts.process-advisor-scheduling-contact.process-advisor-scheduling-contacts-component' => 'App\\Http\\Livewire\\Contacts\\ProcessAdvisorSchedulingContact\\ProcessAdvisorSchedulingContactsComponent',
   'contacts.process-alquimia-agents.process-alquimia-agents-contacts-component' => 'App\\Http\\Livewire\\Contacts\\ProcessAlquimiaAgents\\ProcessAlquimiaAgentsContactsComponent',
   'contacts.processes-contact-component' => 'App\\Http\\Livewire\\Contacts\\ProcessesContactComponent',
   'contacts.stages-contact-component' => 'App\\Http\\Livewire\\Contacts\\StagesContactComponent',

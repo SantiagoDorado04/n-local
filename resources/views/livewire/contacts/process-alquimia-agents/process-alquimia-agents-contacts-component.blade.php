@@ -71,22 +71,27 @@
                                 </h6>
                             </div>
                             <form wire:submit.prevent="saveAnswers">
-                                @foreach ($questions as $question)
+                                @foreach ($questions as $question)x
                                     <div class="col-lg-12">
                                         <div class="form-group">
                                             <label for="question-{{ $question->id }}">
                                                 <strong>{{ $question->text }}: </strong>
                                             </label>
                                             <textarea id="question-{{ $question->id }}" class="form-control" wire:model="answers.{{ $question->id }}"
-                                                rows="14"></textarea>
+                                                rows="8"></textarea>
                                         </div>
                                     </div>
                                     <div class="col-lg-12 text-right text-end">
-                                        <button type="button" class="btn btn-warning sm-b" data-toggle="modal"
+                                        {{-- <button type="button" class="btn btn-warning sm-b" data-toggle="modal"
                                             data-target="#show-modal"
                                             wire:click="generateWithAI({{ $question->id }}, @js($answers[$question->id] ?? ''))">
                                             <i class="voyager-lightbulb"></i> Generar Texto con IA
+                                        </button> --}}
+                                        <button type="button" class="btn btn-warning sm-b" data-toggle="modal"
+                                            data-target="#show-modal" wire:click="openChatModal({{ $question->id }})">
+                                            <i class="voyager-lightbulb"></i> Generar Texto con IA
                                         </button>
+
                                         <button type="button" class="btn btn-danger sm-b" data-toggle="modal"
                                             data-target="#delete-modal"
                                             wire:click="resetAnswerToGuide({{ $question->id }})">
@@ -120,4 +125,13 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Livewire.on('scrollChatToBottom', function() {
+                const el = document.getElementById('chatWindow');
+                if (el) el.scrollTop = el.scrollHeight;
+            });
+        });
+    </script>
+
 </div>

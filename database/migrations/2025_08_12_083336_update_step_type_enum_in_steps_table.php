@@ -15,7 +15,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('steps', function (Blueprint $table) {
-            DB::statement("ALTER TABLE `steps` MODIFY `step_type` ENUM('F', 'M', 'CD', 'FAA', 'LMS', 'LZ', 'VE', 'AL') NOT NULL");
+            DB::statement("ALTER TABLE `steps` MODIFY `step_type` ENUM('F', 'M', 'CD', 'FAA', 'LMS', 'LZ', 'VE', 'AL', 'AT') NOT NULL");
         });
     }
 

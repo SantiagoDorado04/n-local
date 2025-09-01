@@ -49,6 +49,11 @@ class Step extends Model
 
     public function processAlquimiaAgent()
     {
-        return $this->hasMany(ProcessAlquimiaAgent::class, 'step_id');
+        return $this->hasOne(ProcessAlquimiaAgent::class, 'step_id');
+    }
+
+    public function processAdvisorScheduling()
+    {
+        return $this->hasOne(ProcessAdvisorScheduling::class, 'step_id');
     }
 }

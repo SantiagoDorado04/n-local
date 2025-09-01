@@ -169,6 +169,7 @@ use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\OrMyCourseSessions\Or
 use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\OrMyCourseSessions\OrMyCharacterizations\OrMyCharacterizationsDiligences\OrMyCharacterizationsDiligencesComponent;
 use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\OrMyCourseSessions\OrMyCourseSessionsComponent;
 use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\OrMyCourseSessions\OrMySessionContents\OrMySessionContentsComponent;
+use App\Http\Livewire\Contacts\ProcessAdvisorSchedulingContact\ProcessAdvisorSchedulingContactsComponent;
 use App\Http\Livewire\Contacts\ProcessAlquimiaAgents\ProcessAlquimiaAgentsContactsComponent;
 use App\Http\Livewire\Contacts\StagesContactComponent;
 use App\Models\OnlineRegistration;
@@ -392,6 +393,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('steps-contacts/{id}/canvas', CanvasContactsComponent::class)->name('canvas.contact');
         Route::get('steps-contacts/{id}/video-interviews', InterviewsContactsComponent::class)->name('video-interviews.contact');
         Route::get('steps-contacts/{id}/alquimia-agent', ProcessAlquimiaAgentsContactsComponent::class)->name('alquimia-agent.contact');
+        Route::get('steps-contacts/{id}/advisor-scheduling', ProcessAdvisorSchedulingContactsComponent::class)->name('process-advisor-scheduling.contact');
 
         Route::get('courses/{id}/content', LmsContentComponent::class)->name('lms-content.contact');
 

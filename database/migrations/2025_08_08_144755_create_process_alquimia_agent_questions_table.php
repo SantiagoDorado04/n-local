@@ -18,6 +18,7 @@ return new class extends Migration
             $table->String('text');
             $table->text('prompt');
             $table->text('guide');
+            $table->json('contexts')->nullable();
             $table->integer('position');
 
             $table->unsignedBigInteger('process_alquimia_agent_id')->nullable();
