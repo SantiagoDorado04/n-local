@@ -21,8 +21,9 @@ return new class extends Migration
             $table->boolean('status');
             $table->text('url');
             $table->text('apikey');
+            $table->text('headers')->nullable();
             $table->text('response_transformer');
-            $table->text('request_boby');
+            $table->text('request_body');
             $table->timestamps();
         });
     }

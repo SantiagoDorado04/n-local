@@ -20,6 +20,7 @@ class AlquimiaAgentConnectionsComponent extends Component
         $status,
         $url,
         $apikey,
+        $headers,
         $responseTransformer,
         $requestBody,
         $alquimiaAgentConnectionId;
@@ -53,6 +54,7 @@ class AlquimiaAgentConnectionsComponent extends Component
         $this->description = $alquimiaAgentConnection->description;
         $this->type = $alquimiaAgentConnection->type;
         $this->status = $alquimiaAgentConnection->status;
+        $this->headers = $alquimiaAgentConnection->headers;
         $this->url = $alquimiaAgentConnection->url;
         $this->responseTransformer = $alquimiaAgentConnection->response_transformer;
         $this->requestBody = $alquimiaAgentConnection->request_body;
@@ -66,6 +68,17 @@ class AlquimiaAgentConnectionsComponent extends Component
             'type' => 'required',
             'status' => 'required',
             'url' => 'required',
+            'headers' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    if (!empty($value)) {
+                        json_decode($value);
+                        if (json_last_error() !== JSON_ERROR_NONE) {
+                            $fail("Los $attribute deben ser un JSON válido.");
+                        }
+                    }
+                }
+            ],
             'responseTransformer' => 'required',
             'requestBody' => [
                 'required',
@@ -102,6 +115,7 @@ class AlquimiaAgentConnectionsComponent extends Component
         $alquimiaAgentConnection->status = $this->status;
         $alquimiaAgentConnection->url = $this->url;
         $alquimiaAgentConnection->apikey = $this->apikey;
+        $alquimiaAgentConnection->headers = $this->headers;
         if (!empty($this->responseTransformer)) {
             try {
                 $clean = TransformerSanitizer::sanitize($this->responseTransformer);
@@ -130,6 +144,7 @@ class AlquimiaAgentConnectionsComponent extends Component
         $this->status = $alquimiaAgentConnection->status;
         $this->url = $alquimiaAgentConnection->url;
         $this->apikey = '';
+        $this->headers = $alquimiaAgentConnection->headers;
         $this->responseTransformer = $alquimiaAgentConnection->response_transformer;
         $this->requestBody = $alquimiaAgentConnection->request_body;
     }
@@ -142,6 +157,17 @@ class AlquimiaAgentConnectionsComponent extends Component
             'type' => 'required',
             'status' => 'required',
             'url' => 'required',
+            'headers' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    if (!empty($value)) {
+                        json_decode($value);
+                        if (json_last_error() !== JSON_ERROR_NONE) {
+                            $fail("Los $attribute deben ser un JSON válido.");
+                        }
+                    }
+                }
+            ],
             'responseTransformer' => 'required',
             'requestBody' => [
                 'required',
@@ -181,6 +207,8 @@ class AlquimiaAgentConnectionsComponent extends Component
         if ($this->apikey !== null && trim($this->apikey) !== '') {
             $alquimiaAgentConnection->apikey = $this->apikey;
         }
+
+        $alquimiaAgentConnection->headers = $this->headers;
 
         if (!empty($this->responseTransformer)) {
             try {
@@ -224,6 +252,7 @@ class AlquimiaAgentConnectionsComponent extends Component
         $this->status = '';
         $this->url = '';
         $this->apikey = '';
+        $this->headers = '';
         $this->responseTransformer = '';
         $this->requestBody = '';
         $this->alquimiaAgentConnectionId = '';

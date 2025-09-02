@@ -119,17 +119,22 @@
                                                 </div>
                                             </h5>
                                         </div>
-                                        <div class="panel-body" style="height:120px">
-                                            <p style="text-align: justify; text-justify: inter-word;">
+                                        <div class="panel-body"
+                                            style="min-height: 120px; overflow-wrap: break-word; word-break: break-word; white-space: normal;">
+                                            <p class="text-justify">
                                                 <strong>Prompt: </strong>{{ $question->prompt }}
                                             </p>
-                                            <p style="text-align: justify; text-justify: inter-word;">
+                                            <p class="text-justify">
                                                 <strong>Guía: </strong>{{ $question->guide }}
                                             </p>
-                                            <p style="text-align: justify; text-justify: inter-word;">
+                                            <p class="text-justify">
+                                                <strong>Contextos: </strong>{{ $question->contexts }}
+                                            </p>
+                                            <p class="text-justify">
                                                 <strong>Variable: </strong>{{ $convertToVariable($question->text) }}
                                             </p>
                                         </div>
+
                                     </div>
                                 </div>
                             @endforeach

@@ -68,6 +68,15 @@
                         </div>
 
                         <div class="form-group">
+                            <label><strong>Headers (JSON):</strong></label>
+                            <textarea class="form-control" wire:model="headers" rows="3"
+                                placeholder='{"Authorization": "Bearer [$apikey]", "Content-Type": "application/json"}'></textarea>
+                            @error('headers')
+                                <small class="text-danger">{{ $message }}</small>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
                             <label class="is-required"><strong>Transformador de respuesta:</strong></label>
                             <textarea class="form-control" wire:model="responseTransformer" rows="2"></textarea>
                             @error('responseTransformer')

@@ -22,6 +22,15 @@ class AIService
         $bodyJson = str_replace('"[$message]"', $escapedPrompt, $bodyTemplate);
         $body = json_decode($bodyJson, true);
 
+        // Reemplazar [$apikey] en headers por el real
+        $headersJson = $connection->headers ?: '{}';
+        $headersJson = str_replace('[$apikey]', $connection->apikey, $headersJson);
+        $headers = json_decode($headersJson, true);
+
+        if (!$headers) {
+            throw new \Exception("Los headers no son un JSON válido.");
+        }
+
         if (!$body) {
             throw new \Exception("El request_body no es un JSON válido.");
         }
@@ -34,13 +43,12 @@ class AIService
             ]
         ]); */
 
+
+
         // Llamada a la API
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $connection->apikey,
-        ])
-            ->timeout(120)      // ⏱️ aumenta el límite de Guzzle a 120s
-            ->asJson()          // 🚀 asegura que el body se envía como JSON
-            ->timeout(80)
+        $response = Http::withHeaders($headers)
+            ->timeout(120)
+            ->asJson() 
             ->post($connection->url, $body);
 
         $rawResponse = $response->body();

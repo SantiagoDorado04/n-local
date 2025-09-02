@@ -19,6 +19,7 @@ class AlquimiaAgentConnection extends Model
         'status',
         'url',
         'apikey',
+        'headers',
         'response_transformer',
         'request_body',
     ];

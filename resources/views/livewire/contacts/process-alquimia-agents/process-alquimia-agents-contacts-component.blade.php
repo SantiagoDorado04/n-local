@@ -71,14 +71,16 @@
                                 </h6>
                             </div>
                             <form wire:submit.prevent="saveAnswers">
-                                @foreach ($questions as $question)x
+                                @foreach ($questions as $question)
+                                    x
                                     <div class="col-lg-12">
                                         <div class="form-group">
                                             <label for="question-{{ $question->id }}">
                                                 <strong>{{ $question->text }}: </strong>
                                             </label>
-                                            <textarea id="question-{{ $question->id }}" class="form-control" wire:model="answers.{{ $question->id }}"
-                                                rows="8"></textarea>
+                                            <textarea id="question-{{ $question->id }}" class="form-control"
+                                                wire:model.debounce.2s="answers.{{ $question->id }}"
+                                                wire:blur="saveSingleAnswer({{ $question->id }})" rows="12"></textarea
                                         </div>
                                     </div>
                                     <div class="col-lg-12 text-right text-end">
@@ -98,28 +100,28 @@
                                             <i class="voyager-trash"></i> Limpiar
                                         </button>
                                     </div>
-                                @endforeach
+@endforeach
                                 <div class="col-lg-12 text-center">
                                     @if (!$stageActive)
-                                        <p><strong>La etapa en la que te encuentras ya no esta activa o ha
+<p><strong>La etapa en la que te encuentras ya no esta activa o ha
                                                 finalizado.</strong>
                                         </p>
-                                    @else
-                                        <button type="submit" class="btn btn-success sm-b">
+@else
+<button type="submit" class="btn btn-success sm-b">
                                             Guardar Respuestas
                                         </button>
-                                    @endif
+@endif
                                 </div>
                             </form>
                         </div>
                         @if ($answers != '')
-                            <div class="row no-margin-bottom">
+<div class="row no-margin-bottom">
                                 <div class="col-lg-12 text-center">
                                     <button wire:click="downloadTemplate"
                                         class="btn btn-primary sm-b">Descargar</button>
                                 </div>
                             </div>
-                        @endif
+@endif
                     </div>
                 </div>
             </div>

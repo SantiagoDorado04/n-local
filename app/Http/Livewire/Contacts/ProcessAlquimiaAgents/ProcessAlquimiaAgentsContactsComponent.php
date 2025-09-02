@@ -497,4 +497,30 @@ class ProcessAlquimiaAgentsContactsComponent extends Component
 
         $this->cancel();
     }
+    public function saveSingleAnswer($questionId)
+    {
+        if (!isset($this->answers[$questionId])) {
+            return;
+        }
+
+        $sanitizedAnswer = $this->sanitizeAnswer($this->answers[$questionId]);
+
+        ProcessAlquimiaAgentAnswer::updateOrCreate(
+            [
+                'contact_id' => $this->contactId,
+                'process_alquimia_agent_id' => $this->processAlquimiaAgentId,
+                'paa_question_id' => $questionId,
+            ],
+            [
+                'answer' => $sanitizedAnswer,
+            ]
+        );
+
+        $this->emit('alert', ['type' => 'success', 'message' => '¡Respuesta almacenada correctamente!']);
+    }
+
+    public function updatedAnswers($value, $key)
+    {
+        $this->saveSingleAnswer($key);
+    }
 }
