@@ -72,7 +72,6 @@
                             </div>
                             <form wire:submit.prevent="saveAnswers">
                                 @foreach ($questions as $question)
-                                    x
                                     <div class="col-lg-12">
                                         <div class="form-group">
                                             <label for="question-{{ $question->id }}">

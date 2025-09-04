@@ -270,7 +270,7 @@ class ProcessAlquimiaAgentsContactsComponent extends Component
 
             $processedPrompt = str_replace(['“', '”', '‘', '’'], '"', $processedPrompt);
             $result = $this->aiService->generateText($processedPrompt, $connection);
-            $this->generatedText = $result ?: '';
+            $this->generatedText = $this->cleanMarkdown($result) ?: '';
 
             // Emitimos para reflejar en el textarea
             $this->emit('refreshGeneratedText', $this->generatedText);
@@ -522,5 +522,41 @@ class ProcessAlquimiaAgentsContactsComponent extends Component
     public function updatedAnswers($value, $key)
     {
         $this->saveSingleAnswer($key);
+    }
+
+    private function cleanMarkdown(string $text): string
+    {
+        // Encabezados (#, ##, ###) → mayúsculas con separación
+        $text = preg_replace_callback('/^#{1,6}\s*(.+)$/m', function ($matches) {
+            return "\n\n" . strtoupper(trim($matches[1])) . "\n\n";
+        }, $text);
+
+        // Escenas entre paréntesis (ESCENA X) → asegurar mayúsculas
+        $text = preg_replace_callback('/^\(escena\s*\d+\)/im', function ($matches) {
+            return "\n\n" . strtoupper($matches[0]) . "\n\n";
+        }, $text);
+
+        // Quitar separadores tipo --- o --
+        $text = preg_replace('/^\s*[-]{2,}\s*$/m', "\n", $text);
+
+        // Negritas, cursivas
+        $text = preg_replace('/(\*\*|__)(.*?)\1/', '$2', $text);
+        $text = preg_replace('/(\*|_)(.*?)\1/', '$2', $text);
+
+        // Enlaces [texto](url) → texto
+        $text = preg_replace('/\[(.*?)\]\((.*?)\)/', '$1', $text);
+
+        // Código ```...``` y `...`
+        $text = preg_replace('/```(.*?)```/s', '$1', $text);
+        $text = preg_replace('/`([^`]+)`/', '$1', $text);
+
+        // Listas (-, *, +, 1.) → viñetas
+        $text = preg_replace('/^\s*[-*+]\s*/m', '• ', $text);
+        $text = preg_replace('/^\s*\d+\.\s*/m', '• ', $text);
+
+        // Compactar saltos de línea excesivos
+        $text = preg_replace("/\n{3,}/", "\n\n", $text);
+
+        return trim($text);
     }
 }
