@@ -25,7 +25,7 @@
         </ol>
     @endsection
 
-    @section('page_title', 'Cursos | '.setting('admin.title'))
+    @section('page_title', 'Cursos | ' . setting('admin.title'))
 
     @section('page_header')
         <div class="container-fluid">
@@ -93,27 +93,22 @@
                                                 data-toggle="modal" data-target="#show-modal"
                                                 wire:click="show({{ $course->id }})">
                                                 <div class="panel-body" style="height:250px">
-                                                    <p
-                                                        style="  text-align: justify; text-justify: inter-word;">
+                                                    <p style="  text-align: justify; text-justify: inter-word;">
                                                         <strong>Descripcion:
                                                         </strong>{{ Str::limit($course->description, 150) }}
                                                     </p>
-                                                    <p
-                                                        style="  text-align: justify; text-justify: inter-word;">
+                                                    <p style="  text-align: justify; text-justify: inter-word;">
                                                         <strong>Curso anterior:
                                                         </strong>{{ $course->previousCourse ? $course->previousCourse->name : 'Ninguno' }}
                                                     </p>
-                                                    <p
-                                                        style="  text-align: justify; text-justify: inter-word;">
+                                                    <p style="  text-align: justify; text-justify: inter-word;">
                                                         <strong>Siguiente curso:
                                                         </strong>{{ $course->nextCourse ? $course->nextCourse->name : 'Ninguno' }}
                                                     </p>
-                                                    <p
-                                                        style="  text-align: justify; text-justify: inter-word;">
+                                                    <p style="  text-align: justify; text-justify: inter-word;">
                                                         <strong>Fecha de inicio: </strong>{{ $course->start_date }}
                                                     </p>
-                                                    <p
-                                                        style="  text-align: justify; text-justify: inter-word;">
+                                                    <p style="  text-align: justify; text-justify: inter-word;">
                                                         <strong>Fecha final: </strong>{{ $course->end_date }}
                                                     </p>
                                                 </div>
@@ -121,8 +116,8 @@
                                             <div class="panel-footer">
                                                 <div class="pull-right">
                                                     <a class="btn btn-primary sm-b"
-                                                    href="{{ route('courses.participants', ['id' => $course->id]) }}"><i
-                                                        class="voyager-people"></i>&nbsp;Participantes</a>
+                                                        href="{{ route('courses.participants', ['id' => $course->id]) }}"><i
+                                                            class="voyager-people"></i>&nbsp;Participantes</a>
                                                     <a class="btn btn-success sm-b"
                                                         href="{{ route('topics', ['id' => $course->id]) }}"><i
                                                             class="voyager-puzzle"></i> Tematicas</a>
@@ -137,6 +132,9 @@
                             <div class="row no-margin-bottom">
                                 <div class="col-lg-6" style="padding-top:22px">
                                     <span>{!! $paginationText !!}</span>
+                                </div>
+                                <div class="col-lg-6 text-right">
+                                    {{ $courses->links() }}
                                 </div>
                             </div>
                         </div>
