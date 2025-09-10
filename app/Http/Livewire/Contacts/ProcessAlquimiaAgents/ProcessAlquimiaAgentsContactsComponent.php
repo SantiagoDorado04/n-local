@@ -131,7 +131,7 @@ class ProcessAlquimiaAgentsContactsComponent extends Component
         } else {
             $this->chatHistory[] = [
                 'type' => 'bot',
-                'text' => 'No se encontraron variables en la guía. Puedes presionar Generar para usar el prompt tal cual.'
+                'text' => 'Hola, bienvenido a la generación con IA del agente AlquimIA, tengo toda tu informacion, por favor presiona en generar para iniciar la generacion de texto.'
             ];
             $this->isFinishedChat = true;
         }
@@ -312,7 +312,7 @@ class ProcessAlquimiaAgentsContactsComponent extends Component
                 } else {
                     $this->chatHistory[] = [
                         'type' => 'bot',
-                        'text' => 'No se encontraron variables en la guía. Puedes presionar Generar para usar el prompt tal cual.'
+                        'text' => 'Hola, bienvenido a la generación con IA del agente AlquimIA, tengo toda tu informacion, por favor presiona en generar para iniciar la generacion de texto.'
                     ];
                     $this->isFinishedChat = true;
                 }
