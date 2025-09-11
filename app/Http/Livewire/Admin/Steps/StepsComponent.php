@@ -16,6 +16,7 @@ use App\Models\InformationForm;
 use App\Models\PresentialActivity;
 use App\Models\ProcessAdvisorScheduling;
 use App\Models\ProcessAlquimiaAgent;
+use App\Models\ProcessComplianceVerification;
 use Illuminate\Support\Facades\DB;
 
 class StepsComponent extends Component
@@ -44,8 +45,11 @@ class StepsComponent extends Component
     public $stageM;
     public $stepM;
 
-    //Scheduling embed
+   // embeds
     public $schedulingEmbed;
+    public $complianceEmbed;
+
+
     public $requiredSteps = [];
     public $filteredRequiredSteps;
     public $selectedRequiredSteps = [];
@@ -182,6 +186,14 @@ class StepsComponent extends Component
                 $processAdvisorScheduling->embed = $this->schedulingEmbed ?? null;
                 $processAdvisorScheduling->required_steps = json_encode($this->selectedRequiredSteps);
                 $processAdvisorScheduling->save();
+                break;
+
+            case 'VP':
+                $processComplianceVerification = new ProcessComplianceVerification();
+                $processComplianceVerification->step_id = $step->id;
+                $processComplianceVerification->embed = $this->complianceEmbed ?? null;
+                $processComplianceVerification->required_steps = json_encode($this->selectedRequiredSteps);
+                $processComplianceVerification->save();
                 break;
 
             default:

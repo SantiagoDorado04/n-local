@@ -102,6 +102,7 @@
   'admin.presential-activities.presential-activities-participants-component' => 'App\\Http\\Livewire\\Admin\\PresentialActivities\\PresentialActivitiesParticipantsComponent',
   'admin.process-alquimia-agent.process-alquimia-agent-component' => 'App\\Http\\Livewire\\Admin\\ProcessAlquimiaAgent\\ProcessAlquimiaAgentComponent',
   'admin.process-alquimia-agent.process-alquimia-agent-list-component' => 'App\\Http\\Livewire\\Admin\\ProcessAlquimiaAgent\\ProcessAlquimiaAgentListComponent',
+  'admin.process-compliance-verification.process-compliance-verification-component' => 'App\\Http\\Livewire\\Admin\\ProcessComplianceVerification\\ProcessComplianceVerificationComponent',
   'admin.processes.processes-component' => 'App\\Http\\Livewire\\Admin\\Processes\\ProcessesComponent',
   'admin.products-services.products-services-component' => 'App\\Http\\Livewire\\Admin\\ProductsServices\\ProductsServicesComponent',
   'admin.profile.companies-profile-component' => 'App\\Http\\Livewire\\Admin\\Profile\\CompaniesProfileComponent',
