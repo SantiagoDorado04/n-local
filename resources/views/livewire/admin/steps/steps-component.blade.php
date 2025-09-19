@@ -220,8 +220,23 @@
                                                                     class="voyager-puzzle"></i>&nbsp;Agente AlquimIA</a>
                                                         @break
 
+                                                        @case('PT')
+                                                            <a class="btn btn-success sm-b"
+                                                                href="{{ route('process-test-appreciations', ['id' => $step->id]) }}"><i
+                                                                    class="voyager-puzzle"></i>&nbsp;Apreciaciones del Test</a>
+                                                            <a class="btn btn-success sm-b"
+                                                                href="{{ route('process-test-categories', ['id' => $step->id]) }}"><i
+                                                                    class="voyager-puzzle"></i>&nbsp;Categorias</a>
+                                                            <a class="btn btn-success sm-b"
+                                                                href="{{ route('process-test-answers', ['id' => $step->processTest->id]) }}"><i
+                                                                    class="voyager-puzzle"></i>&nbsp;Respuestas</a>
+                                                            <a class="btn btn-success sm-b"
+                                                                href="{{ route('process-test', ['id' => $step->id]) }}"><i
+                                                                    class="voyager-puzzle"></i>&nbsp;Preguntas</a>
+                                                        @break
+
                                                         @case('AT')
-                                                            <h5>Agente de Asesoría</h5>
+                                                            <h5>Agendamiento de Asesoría</h5>
                                                         @break
 
                                                         @case('VE')

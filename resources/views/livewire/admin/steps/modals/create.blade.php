@@ -57,6 +57,7 @@
                                 <option value="VE">Video Entrevista</option>
                                 <option value="AL">Agente AlquimIA</option>
                                 <option value="AT">Agendamiento Trafft</option>
+                                <option value="PT">Test</option>
                             </select>
                             @error('step_type')
                                 <small class="text-danger">{{ $message }}</small>

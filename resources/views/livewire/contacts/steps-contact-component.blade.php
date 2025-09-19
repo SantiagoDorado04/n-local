@@ -158,6 +158,12 @@
                                                                 Asesor</a>
                                                         @break
 
+                                                        @case('PT')
+                                                            <a class="btn btn-success sm-b"
+                                                                href="{{ route('process-test.contact', ['id' => $step->id]) }}"><i
+                                                                    class="fa fa-arrow-right"></i>&nbsp;Test</a>
+                                                        @break
+
                                                         @default
                                                     @endswitch
                                                 </div>

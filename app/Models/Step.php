@@ -56,4 +56,9 @@ class Step extends Model
     {
         return $this->hasOne(ProcessAdvisorScheduling::class, 'step_id');
     }
+
+    public function processTest()
+    {
+        return $this->hasOne(ProcessTest::class, 'step_id');
+    }
 }

@@ -17,6 +17,7 @@ use App\Models\PresentialActivity;
 use App\Models\ProcessAdvisorScheduling;
 use App\Models\ProcessAlquimiaAgent;
 use App\Models\ProcessComplianceVerification;
+use App\Models\ProcessTest;
 use Illuminate\Support\Facades\DB;
 
 class StepsComponent extends Component
@@ -45,7 +46,7 @@ class StepsComponent extends Component
     public $stageM;
     public $stepM;
 
-   // embeds
+    // embeds
     public $schedulingEmbed;
     public $complianceEmbed;
 
@@ -196,6 +197,14 @@ class StepsComponent extends Component
                 $processComplianceVerification->save();
                 break;
 
+            case 'PT':
+                $processTest = new ProcessTest();
+                $processTest->step_id = $step->id;
+                $processTest->name = $this->name;
+                $processTest->description = $this->description;
+                $processTest->save();
+                break;
+
             default:
                 break;
         }
@@ -282,12 +291,12 @@ class StepsComponent extends Component
             'selectedAlquimiaConnection' => 'conexión de Alquimia',
         ]);
 
-        $step = Step::find($this->stepId);
+        $step = Step::findOrFail($this->stepId);
         $step->name = $this->name;
         $step->description = $this->description;
         $step->available_from = $this->available_from;
         $step->step_type = $this->step_type;
-        $step->update();
+        $step->save();
 
         switch ($this->step_type) {
             case 'AL':
@@ -310,12 +319,30 @@ class StepsComponent extends Component
                 }
                 break;
 
+            case 'VP':
+                $processComplianceVerification = ProcessComplianceVerification::where('step_id', $step->id)->first();
+                if ($processComplianceVerification) {
+                    $processComplianceVerification->embed = $this->complianceEmbed;
+                    $processComplianceVerification->required_steps = json_encode($this->selectedRequiredSteps);
+                    $processComplianceVerification->save();
+                }
+                break;
+
             case 'LZ':
-                $canvaUpdate = InformationForm::where('step_id', $step->id)->first();
-                if ($canvaUpdate) {
-                    $canvaUpdate->name = $this->name;
-                    $canvaUpdate->description = $this->description;
-                    $canvaUpdate->save();
+                $form = InformationForm::where('step_id', $step->id)->first();
+                if ($form) {
+                    $form->name = $this->name;
+                    $form->description = $this->description;
+                    $form->save();
+                }
+                break;
+
+            case 'PT':
+                $processTest = ProcessTest::where('step_id', $step->id)->first();
+                if ($processTest) {
+                    $processTest->name = $this->name;
+                    $processTest->description = $this->description;
+                    $processTest->save();
                 }
                 break;
 
@@ -326,7 +353,6 @@ class StepsComponent extends Component
         $this->emit('alert', ['type' => 'success', 'message' => 'Paso actualizado correctamente']);
         $this->cancel();
     }
-
 
     public function delete($id)
     {

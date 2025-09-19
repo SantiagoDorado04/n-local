@@ -164,6 +164,14 @@ use App\Http\Livewire\Admin\OnlineRegistrations\OnlineRegistrationChannelCompone
 use App\Http\Livewire\Admin\OnlineRegistrations\OnlineRegistrationExternalExecutionsComponent;
 use App\Http\Livewire\Admin\ProcessAlquimiaAgent\ProcessAlquimiaAgentComponent;
 use App\Http\Livewire\Admin\ProcessAlquimiaAgent\ProcessAlquimiaAgentListComponent;
+use App\Http\Livewire\Admin\ProcessTests\ProcessTestAppreciationsComponent;
+use App\Http\Livewire\Admin\ProcessTests\ProcessTestsAnswersComponent;
+use App\Http\Livewire\Admin\ProcessTests\ProcessTestsCategories\ProcessTestCategoriesAppreciationsComponent;
+use App\Http\Livewire\Admin\ProcessTests\ProcessTestsCategories\ProcessTestsCategoriesComponent;
+use App\Http\Livewire\Admin\ProcessTests\ProcessTestsCategories\ProcessTestsSubcategories\ProcessTestsSubcategoriesComponent;
+use App\Http\Livewire\Admin\ProcessTests\ProcessTestsCategories\ProcessTestsSubcategories\ProcessTestSubcategoriesAppreciationsComponent;
+use App\Http\Livewire\Admin\ProcessTests\ProcessTestsComponent;
+use App\Http\Livewire\Admin\ProcessTests\ProcessTestsOptions\ProcessTestsOptionsComponent;
 use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\MyOnlineRegistrationCoursesComponent;
 use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\OrMyCourseSessions\OrMyCharacterizations\OrMyCharacterizationsComponent;
 use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\OrMyCourseSessions\OrMyCharacterizations\OrMyCharacterizationsDiligences\OrMyCharacterizationsDiligencesComponent;
@@ -171,6 +179,7 @@ use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\OrMyCourseSessions\Or
 use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\OrMyCourseSessions\OrMySessionContents\OrMySessionContentsComponent;
 use App\Http\Livewire\Contacts\ProcessAdvisorSchedulingContact\ProcessAdvisorSchedulingContactsComponent;
 use App\Http\Livewire\Contacts\ProcessAlquimiaAgents\ProcessAlquimiaAgentsContactsComponent;
+use App\Http\Livewire\Contacts\ProcessTests\ProcessTestsContactComponent;
 use App\Http\Livewire\Contacts\StagesContactComponent;
 use App\Models\OnlineRegistration;
 use App\Models\OnlineRegistrationChannel;
@@ -394,6 +403,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('steps-contacts/{id}/video-interviews', InterviewsContactsComponent::class)->name('video-interviews.contact');
         Route::get('steps-contacts/{id}/alquimia-agent', ProcessAlquimiaAgentsContactsComponent::class)->name('alquimia-agent.contact');
         Route::get('steps-contacts/{id}/advisor-scheduling', ProcessAdvisorSchedulingContactsComponent::class)->name('process-advisor-scheduling.contact');
+        Route::get('steps-contacts/{id}/test', ProcessTestsContactComponent::class)->name('process-test.contact');
 
         Route::get('courses/{id}/content', LmsContentComponent::class)->name('lms-content.contact');
 
@@ -477,6 +487,21 @@ Route::group(['prefix' => 'admin'], function () {
         // En routes/web.php
 
         Route::get('online-registrations/categories/courses/certificate/{id}/download/{contactId}', [OnlineRegistrationDocumentsController::class, 'generarPDF'])->name('descargar.certificado');
+
+
+        // Process TEST
+
+        Route::get('step/{id}/process-test', ProcessTestsComponent::class)->name('process-test');
+        Route::get('step/{id}/process-test-options', ProcessTestsOptionsComponent::class)->name('process-test-options');
+        Route::get('process-test/{id}/answers', ProcessTestsAnswersComponent::class)->name('process-test-answers');
+        Route::get('process-test/{id}/categories', ProcessTestsCategoriesComponent::class)->name('process-test-categories');
+        Route::get('process-test/{id}/categories-appreciations', ProcessTestCategoriesAppreciationsComponent::class)->name('process-test-categories-appreciations');
+        Route::get('process-test/{id}/subcategories', ProcessTestsSubcategoriesComponent::class)->name('process-test-subcategories');
+        Route::get('process-test-categories/{id}/subcategories-appreciations', ProcessTestSubcategoriesAppreciationsComponent::class)->name('process-test-subcategories-appreciations');
+        Route::get('process-test/{id}/appreciations', ProcessTestAppreciationsComponent::class)->name('process-test-appreciations');
+
+
+
 
         //rutas modulo de usuarios de online registrations
 
