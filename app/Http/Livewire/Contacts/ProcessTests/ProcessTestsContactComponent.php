@@ -18,17 +18,12 @@ class ProcessTestsContactComponent extends Component
 
     protected $paginationTheme = 'bootstrap';
 
-    public $searchName;
-
     public $processTestId;
     public $stepId;
     public $processTest;
     public $questions;
     public $options;
     public $contactId;
-
-    public $input;
-    public $message = '';
     public $count = 1;
 
 
@@ -102,33 +97,6 @@ class ProcessTestsContactComponent extends Component
 
         $this->emit('alert', ['type' => 'success', 'message' => '¡Test enviado correctamente!']);
         $this->render();
-    }
-
-    private function downloadChartImage($chartUrl, $filename)
-    {
-        try {
-            $context = stream_context_create([
-                'http' => [
-                    'timeout' => 30,
-                    'user_agent' => 'Mozilla/5.0 (compatible; PHP Chart Downloader)',
-                    'follow_location' => true
-                ]
-            ]);
-
-            $imageData = file_get_contents($chartUrl, false, $context);
-
-            if ($imageData === false) {
-                throw new \Exception("No se pudo descargar la imagen");
-            }
-
-            $path = "temp/charts/{$filename}";
-            Storage::put($path, $imageData);
-
-            return storage_path("app/{$path}");
-        } catch (\Exception $e) {
-            dd("Error descargando gráfico: " . $e->getMessage());
-            return null;
-        }
     }
 
     /**
@@ -231,16 +199,23 @@ class ProcessTestsContactComponent extends Component
         }
 
         // --- Gráfico general tipo doughnut en porcentajes ---
-        $generalPercent = $totalMaxPoints > 0 ? round(($totalPoints / $totalMaxPoints) * 100, 1) : 0;
+        $generalPercent = $totalMaxPoints > 0
+            ? number_format(($totalPoints / $totalMaxPoints) * 100, 2, '.', '')
+            : 0;
+
+        $generalRestante = number_format(100 - $generalPercent, 2, '.', '');
         $qcGeneral = new QuickChart();
         $qcGeneral->setWidth(500);
         $qcGeneral->setHeight(400);
         $qcGeneral->setConfig([
             'type' => 'doughnut',
             'data' => [
-                'labels' => ['Obtenido (' . $generalPercent . '%)', 'Restante'],
+                'labels' => [
+                    'Obtenido (' . $generalPercent . '%)',
+                    'Posibilidad de mejora (' . $generalRestante . '%)'
+                ],
                 'datasets' => [[
-                    'data' => [$generalPercent, 100 - $generalPercent],
+                    'data' => [$generalPercent, $generalRestante],
                     'backgroundColor' => ['#4CAF50', '#E0E0E0'],
                     'borderWidth' => 2,
                     'borderColor' => '#ffffff'
@@ -287,7 +262,7 @@ class ProcessTestsContactComponent extends Component
                 // Agregar cada subcategoría como % del total de la categoría
                 foreach ($category->subcategories as $i => $sub) {
                     $subPercent = $category->max_score > 0
-                        ? round(($sub->score / $category->max_score) * 100, 1)
+                        ? number_format(($sub->score / $category->max_score) * 100, 2, '.', '')
                         : 0;
 
                     $labels[] = $sub->name . ' (' . $subPercent . '%)';
@@ -296,9 +271,9 @@ class ProcessTestsContactComponent extends Component
                 }
 
                 // Restante global en gris
-                $restante = max(0, 100 - array_sum($percentages));
+                $restante = max(0, number_format(100 - array_sum($percentages), 2, '.', ''));
                 if ($restante > 0) {
-                    $labels[] = 'Restante';
+                    $labels[] = 'Posibilidad de mejora (' . $restante . '%)';
                     $percentages[] = $restante;
                     $backgroundColors[] = '#E0E0E0';
                 }
@@ -368,25 +343,5 @@ class ProcessTestsContactComponent extends Component
             fn() => print($pdf->output()),
             'resultado-test-' . $this->contactId . '-' . date('Y-m-d-H-i-s') . '.pdf'
         );
-    }
-
-
-    /**
-     * Limpia archivos temporales de gráficos
-     */
-    private function cleanupTempFiles()
-    {
-        try {
-            $files = Storage::files('temp/charts');
-            $cutoff = now()->subHours(2);
-
-            foreach ($files as $file) {
-                if (Storage::lastModified($file) < $cutoff->timestamp) {
-                    Storage::delete($file);
-                }
-            }
-        } catch (\Exception $e) {
-            dd("Error limpiando archivos temporales: " . $e->getMessage());
-        }
     }
 }

@@ -8,17 +8,14 @@
         /* --- Configuración General --- */
         @page {
             margin: 120px 40px 60px 40px;
-            /* Margen: superior, derecho, inferior, izquierdo */
         }
 
         body {
             font-family: 'DejaVu Sans', sans-serif;
-            /* Fuente compatible con dom-pdf y caracteres especiales */
             font-size: 12px;
             color: #333;
         }
 
-        /* --- Encabezado y Pie de Página --- */
         header {
             position: fixed;
             top: -90px;
@@ -58,7 +55,6 @@
             padding-top: 10px;
         }
 
-        /* --- Clases de Utilidad --- */
         .page-break {
             page-break-after: always;
         }
@@ -71,7 +67,6 @@
             page-break-inside: avoid;
         }
 
-        /* --- Título y Resumen Principal --- */
         .main-title {
             color: #005A9C;
             font-size: 24px;
@@ -95,7 +90,6 @@
             font-size: 14px;
         }
 
-        /* --- Contenedores y Gráficos --- */
         .chart-container {
             text-align: center;
             margin: 25px 0;
@@ -109,7 +103,6 @@
             height: auto;
         }
 
-        /* --- NUEVO LAYOUT PARA CATEGORÍAS --- */
         .category-block {
             margin-bottom: 40px;
             padding: 20px;
@@ -126,7 +119,6 @@
             padding-bottom: 10px;
         }
 
-        /* -- NUEVO ESTILO PARA LA APRECIACIÓN DE LA CATEGORÍA -- */
         .category-header .appreciation {
             background-color: #e7f3fe;
             padding: 10px;
@@ -139,7 +131,6 @@
             margin-top: 20px;
         }
 
-        /* Tabla de dos columnas para el layout */
         .layout-table {
             width: 100%;
             border-collapse: collapse;
@@ -183,7 +174,6 @@
             color: #444;
         }
 
-        /* --- Tabla de Respuestas Detalladas --- */
         .answers-section {
             margin-top: 40px;
         }
@@ -230,7 +220,7 @@
         <div class="summary-box text-center">
             <p>
                 <strong>Puntaje Total:</strong> {{ $totalPoints }} / {{ $totalMaxPoints }}
-                (<strong>{{ $totalMaxPoints > 0 ? round(($totalPoints / $totalMaxPoints) * 100, 1) : 0 }}%</strong>)
+                (<strong>{{ $totalMaxPoints > 0 ? number_format(($totalPoints / $totalMaxPoints) * 100, 2) : 0 }}%</strong>)
             </p>
             <h3>
                 Apreciación General:
@@ -259,7 +249,7 @@
                     <h2>{{ $category->name }}</h2>
                     <p>
                         Puntuación: <strong>{{ $category->score }} / {{ $category->max_score }}</strong>
-                        ({{ $category->max_score > 0 ? round(($category->score / $category->max_score) * 100, 1) : 0 }}%)
+                        ({{ $category->max_score > 0 ? number_format(($category->score / $category->max_score) * 100, 2) : 0 }}%)
                     </p>
 
                     @if ($category->appreciation_result)
@@ -281,7 +271,7 @@
                                         <div class="item">
                                             <span><strong>{{ $sub->name }}</strong></span>
                                             <div class="percentage">
-                                                {{ $sub->max_score > 0 ? round(($sub->score / $sub->max_score) * 100, 1) : 0 }}%
+                                                {{ $sub->max_score > 0 ? number_format(($sub->score / $sub->max_score) * 100, 2) : 0 }}%
                                             </div>
                                             <small style="color: #777;">{{ $sub->score }} / {{ $sub->max_score }}
                                                 puntos</small>

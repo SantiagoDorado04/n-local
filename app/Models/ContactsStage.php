@@ -23,13 +23,16 @@ class ContactsStage extends Model
     public function informationFormAnswers()
     {
         return $this->hasMany(InformationFormAnswer::class, 'contact_id', 'contact_id')
-                    ->where('information_form_id', $this->stage->form->id);
+            ->where('information_form_id', $this->stage->form->id);
     }
 
     public function contactChallenge()
     {
         return $this->hasOne(ContactsChallenge::class, 'contact_id');
     }
+
+    public function processContactTests()
+    {
+        return $this->hasMany(ProcessContactTest::class, 'contact_id', 'contact_id');
+    }
 }
-
-

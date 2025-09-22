@@ -228,7 +228,7 @@
                                                                 href="{{ route('process-test-categories', ['id' => $step->id]) }}"><i
                                                                     class="voyager-puzzle"></i>&nbsp;Categorias</a>
                                                             <a class="btn btn-success sm-b"
-                                                                href="{{ route('process-test-answers', ['id' => $step->processTest->id]) }}"><i
+                                                                href="{{ route('process-test-answers', ['id' => $step->id]) }}"><i
                                                                     class="voyager-puzzle"></i>&nbsp;Respuestas</a>
                                                             <a class="btn btn-success sm-b"
                                                                 href="{{ route('process-test', ['id' => $step->id]) }}"><i

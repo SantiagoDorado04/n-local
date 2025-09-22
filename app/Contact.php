@@ -14,6 +14,7 @@ use App\AnnouncementsContact;
 use App\ContactsAssignedForm;
 use App\Models\OnlineRegistrationCertificationRegister;
 use App\Models\OnlineRegistrationContactDocument;
+use App\Models\ProcessContactTest;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -142,4 +143,9 @@ class Contact extends Model
         return $this->hasMany(OnlineRegistrationCertificationRegister::class, 'contact_id');
     }
 
+    public function processContactTestFor($processTestId)
+    {
+        return $this->hasOne(ProcessContactTest::class, 'contact_id', 'id')
+            ->where('process_test_id', $processTestId);
+    }
 }
