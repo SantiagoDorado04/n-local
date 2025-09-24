@@ -164,6 +164,8 @@ use App\Http\Livewire\Admin\OnlineRegistrations\OnlineRegistrationChannelCompone
 use App\Http\Livewire\Admin\OnlineRegistrations\OnlineRegistrationExternalExecutionsComponent;
 use App\Http\Livewire\Admin\ProcessAlquimiaAgent\ProcessAlquimiaAgentComponent;
 use App\Http\Livewire\Admin\ProcessAlquimiaAgent\ProcessAlquimiaAgentListComponent;
+use App\Http\Livewire\Admin\ProcessComplianceVerification\ProcessComplianceVerificationAnswersComponent;
+use App\Http\Livewire\Admin\ProcessComplianceVerification\ProcessComplianceVerificationComponent;
 use App\Http\Livewire\Admin\ProcessTests\ProcessTestAppreciationsComponent;
 use App\Http\Livewire\Admin\ProcessTests\ProcessTestsAnswersComponent;
 use App\Http\Livewire\Admin\ProcessTests\ProcessTestsCategories\ProcessTestCategoriesAppreciationsComponent;
@@ -179,6 +181,7 @@ use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\OrMyCourseSessions\Or
 use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\OrMyCourseSessions\OrMySessionContents\OrMySessionContentsComponent;
 use App\Http\Livewire\Contacts\ProcessAdvisorSchedulingContact\ProcessAdvisorSchedulingContactsComponent;
 use App\Http\Livewire\Contacts\ProcessAlquimiaAgents\ProcessAlquimiaAgentsContactsComponent;
+use App\Http\Livewire\Contacts\ProcessComplianceVerification\ProcessComplianceVerificationContactsComponent;
 use App\Http\Livewire\Contacts\ProcessTests\ProcessTestsContactComponent;
 use App\Http\Livewire\Contacts\StagesContactComponent;
 use App\Models\OnlineRegistration;
@@ -389,6 +392,10 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('step/{id}/alquimia-agent', ProcessAlquimiaAgentComponent::class)->name('process-alquimia-agent');
         Route::get('alquimia-agent/{id}/list', ProcessAlquimiaAgentListComponent::class)->name('process-alquimia-agent-list');
 
+        //Compliance Verification
+        Route::get('step/{id}/compliance-verification', ProcessComplianceVerificationComponent::class)->name('process-compliance-verification');
+        Route::get('compliance-verification/{id}/answers', ProcessComplianceVerificationAnswersComponent::class)->name('process-compliance-verification-answers');
+
         //Contacts
         Route::get('my-processes', ProcessesContactComponent::class)->name('processes.contact');
         Route::get('my-processes/{id}/stages', StagesContactComponent::class)->name('stages.contact');
@@ -404,6 +411,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('steps-contacts/{id}/alquimia-agent', ProcessAlquimiaAgentsContactsComponent::class)->name('alquimia-agent.contact');
         Route::get('steps-contacts/{id}/advisor-scheduling', ProcessAdvisorSchedulingContactsComponent::class)->name('process-advisor-scheduling.contact');
         Route::get('steps-contacts/{id}/test', ProcessTestsContactComponent::class)->name('process-test.contact');
+        Route::get('steps-contacts/{id}/compliance-verification', ProcessComplianceVerificationContactsComponent::class)->name('process-contact-compliance-verification');
 
         Route::get('courses/{id}/content', LmsContentComponent::class)->name('lms-content.contact');
 

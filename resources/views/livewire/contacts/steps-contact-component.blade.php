@@ -158,6 +158,13 @@
                                                                 Asesor</a>
                                                         @break
 
+                                                        @case('CV')
+                                                            <a class="btn btn-success sm-b"
+                                                                href="{{ route('process-contact-compliance-verification', ['id' => $step->id]) }}"><i
+                                                                    class="fa fa-arrow-right"></i>&nbsp;Verificacion de
+                                                                cumplimiento</a>
+                                                        @break
+
                                                         @case('PT')
                                                             <a class="btn btn-success sm-b"
                                                                 href="{{ route('process-test.contact', ['id' => $step->id]) }}"><i

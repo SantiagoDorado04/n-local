@@ -128,6 +128,9 @@
                                                         case 'AL':
                                                             $stepType = 'Agente AlquimIA';
                                                             break;
+                                                        case 'CV':
+                                                            $stepType = 'Verificacion de cumplimiento';
+                                                            break;
                                                         default:
                                                             $stepType = 'No definido';
                                                             break;
@@ -218,6 +221,13 @@
                                                             <a class="btn btn-success sm-b"
                                                                 href="{{ route('process-alquimia-agent', ['id' => $step->id]) }}"><i
                                                                     class="voyager-puzzle"></i>&nbsp;Agente AlquimIA</a>
+                                                        @break
+
+                                                        @case('CV')
+                                                            <a class="btn btn-success sm-b"
+                                                                href="{{ route('process-compliance-verification', ['id' => $step->id]) }}"><i
+                                                                    class="voyager-boat"></i>&nbsp;Verificacion de
+                                                                cumplimiento</a>
                                                         @break
 
                                                         @case('PT')

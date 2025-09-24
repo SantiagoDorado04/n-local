@@ -205,6 +205,14 @@ class StepsComponent extends Component
                 $processTest->save();
                 break;
 
+            case 'CV':
+                $processComplianceVerification = new ProcessComplianceVerification();
+                $processComplianceVerification->step_id = $step->id;
+                $processComplianceVerification->embed = $this->complianceEmbed ?? null;
+                $processComplianceVerification->required_steps = json_encode($this->selectedRequiredSteps);
+                $processComplianceVerification->save();
+                break;
+
             default:
                 break;
         }
@@ -238,6 +246,16 @@ class StepsComponent extends Component
                 $this->schedulingEmbed = $processAdvisorScheduling->embed;
                 $this->selectedRequiredSteps = $processAdvisorScheduling->required_steps
                     ? json_decode($processAdvisorScheduling->required_steps, true)
+                    : [];
+            }
+        }
+
+        if ($this->step_type === 'CV') {
+            $processComplianceVerification = ProcessComplianceVerification::where('step_id', $step->id)->first();
+            if ($processComplianceVerification) {
+                $this->complianceEmbed = $processComplianceVerification->embed;
+                $this->selectedRequiredSteps = $processComplianceVerification->required_steps
+                    ? json_decode($processComplianceVerification->required_steps, true)
                     : [];
             }
         }
@@ -343,6 +361,15 @@ class StepsComponent extends Component
                     $processTest->name = $this->name;
                     $processTest->description = $this->description;
                     $processTest->save();
+                }
+                break;
+
+            case 'CV':
+                $processComplianceVerification = ProcessComplianceVerification::where('step_id', $step->id)->first();
+                if ($processComplianceVerification) {
+                    $processComplianceVerification->embed = $this->complianceEmbed;
+                    $processComplianceVerification->required_steps = json_encode($this->selectedRequiredSteps);
+                    $processComplianceVerification->save();
                 }
                 break;
 

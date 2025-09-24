@@ -26,4 +26,9 @@ class ProcessComplianceVerification extends Model
     {
         return $this->hasMany(PComplianceVerificationAnswer::class, 'pc_verification_id');
     }
+
+    public function step()
+    {
+        return $this->belongsTo(Step::class, 'step_id');
+    }
 }

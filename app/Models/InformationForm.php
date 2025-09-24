@@ -37,6 +37,6 @@ class InformationForm extends Model
 
     public function questions()
     {
-        return $this->hasMany(InformationFormQuestion::class)->orderBt('position', 'asc');
+        return $this->hasMany(InformationFormQuestion::class)->orderBy('position', 'asc');
     }
 }

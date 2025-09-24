@@ -57,6 +57,7 @@
                                 <option value="AL">Agente AlquimIA</option>
                                 <option value="AT">Agendamiento Trafft</option>
                                 <option value="PT">Test</option>
+                                <option value="CV">Validacion de cumplimiento</option>
                             </select>
                             @error('step_type')
                                 <small class="text-danger">{{ $message }}</small>
@@ -99,6 +100,35 @@
                                                 wire:model="selectedRequiredSteps" value="{{ $step->id }}"
                                                 id="req-step-{{ $step->id }}">
                                             <label class="form-check-label" for="req-step-{{ $step->id }}">
+                                                {{ $step->name }}
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                @error('selectedRequiredSteps')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        @endif
+                        @if ($step_type === 'CV')
+                            <div class="form-group">
+                                <label class="is-required"><strong>Embed de Compliance Verification: </strong></label>
+                                <textarea class="form-control" wire:model="complianceEmbed" rows="4" placeholder="Escriba aquí el embed..."></textarea>
+                                @error('complianceEmbed')
+                                    <small class="text-danger">{{ $message }}</small>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label><strong>Selecciona los pasos requeridos:</strong></label>
+                                <div class="checkbox-list"
+                                    style="max-height: 200px; overflow-y:auto; border:1px solid #ccc; padding:10px; border-radius:5px;">
+                                    @foreach ($filteredRequiredSteps as $step)
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input"
+                                                wire:model="selectedRequiredSteps" value="{{ $step->id }}"
+                                                id="req-step-cv-{{ $step->id }}">
+                                            <label class="form-check-label" for="req-step-cv-{{ $step->id }}">
                                                 {{ $step->name }}
                                             </label>
                                         </div>
