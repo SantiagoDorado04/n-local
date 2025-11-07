@@ -14,6 +14,7 @@ use App\AnnouncementsContact;
 use App\ContactsAssignedForm;
 use App\Models\OnlineRegistrationCertificationRegister;
 use App\Models\OnlineRegistrationContactDocument;
+use App\Models\PContactComplianceVerification;
 use App\Models\ProcessContactTest;
 use Illuminate\Database\Eloquent\Model;
 
@@ -147,5 +148,11 @@ class Contact extends Model
     {
         return $this->hasOne(ProcessContactTest::class, 'contact_id', 'id')
             ->where('process_test_id', $processTestId);
+    }
+
+    public function pContactComplianceVerificationFor($complianceId)
+    {
+        return $this->hasOne(PContactComplianceVerification::class, 'contact_id', 'id')
+            ->where('pc_verification_id', $complianceId);
     }
 }

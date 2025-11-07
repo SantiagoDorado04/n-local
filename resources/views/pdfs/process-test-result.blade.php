@@ -215,7 +215,10 @@
 
     <main>
         <h1 class="main-title">{{ $processTest->name }}</h1>
-        <h2>{!! nl2br(e($processTest->description)) !!}</h2>
+        <h2 style="text-align:center; color:#333;">
+            Empresa: {{ $contact->name ?? 'No disponible' }}
+        </h2>
+        <h3>{!! nl2br(e($processTest->description)) !!}</h3>
 
         <div class="summary-box text-center">
             <p>

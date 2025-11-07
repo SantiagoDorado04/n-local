@@ -67,8 +67,13 @@
                                 @enderror
                             </div>
                             <div class="col-lg-4">
-                                <button class="btn  btn-success" wire:click="upload"><i class="fa fa-upload"
-                                        aria-hidden="true"></i>&nbsp;Cargar</button>
+                                <button class="btn btn-success" wire:click="upload" wire:loading.attr="disabled"
+                                    wire:target="template,upload">
+                                    <i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Cargar
+                                </button>
+                                <div wire:loading wire:target="template">
+                                    <small class="text-muted">Subiendo archivo...</small>
+                                </div>
                                 @if ($agent->url_file != '')
                                     <button class="btn btn-primary" wire:click='downloadTemplate'><i
                                             class="fa fa-download" aria-hidden="true"></i>&nbsp;Descargar</button>

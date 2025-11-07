@@ -16,6 +16,7 @@ use App\Models\InformationForm;
 use App\Models\PresentialActivity;
 use App\Models\ProcessAdvisorScheduling;
 use App\Models\ProcessAlquimiaAgent;
+use App\Models\ProcessAlquimiaAgentQuestion;
 use App\Models\ProcessComplianceVerification;
 use App\Models\ProcessTest;
 use Illuminate\Support\Facades\DB;
@@ -607,21 +608,186 @@ class StepsComponent extends Component
 
                     DB::transaction(function () use ($agents, $newStep) {
                         foreach ($agents as $agentOrigin) {
-                            // Duplicamos el agente
+                            // 1️⃣ Duplicar el agente
                             $newAgent = $agentOrigin->replicate();
                             $newAgent->step_id = $newStep->id;
                             $newAgent->save();
 
-                            // Duplicamos sus preguntas
+                            // Mapa de correspondencia entre IDs antiguos y nuevos
+                            $idMap = [];
+
+                            // 2️⃣ Primera pasada: duplicar preguntas y guardar correspondencias
                             foreach ($agentOrigin->questions as $questionOrigin) {
                                 $newQuestion = $questionOrigin->replicate();
                                 $newQuestion->process_alquimia_agent_id = $newAgent->id;
                                 $newQuestion->save();
+
+                                $idMap[$questionOrigin->id] = $newQuestion->id;
+                            }
+
+                            // 3️⃣ Segunda pasada: actualizar los contexts
+                            foreach ($agentOrigin->questions as $questionOrigin) {
+                                if ($questionOrigin->contexts) {
+                                    $originalContexts = json_decode($questionOrigin->contexts, true);
+
+                                    if (is_array($originalContexts)) {
+                                        // Reemplazar IDs antiguos por los nuevos (si existen)
+                                        $newContexts = array_map(function ($oldId) use ($idMap) {
+                                            return $idMap[$oldId] ?? $oldId; // si no existe, se deja igual
+                                        }, $originalContexts);
+
+                                        // Buscar la pregunta nueva correspondiente
+                                        $newQuestionId = $idMap[$questionOrigin->id] ?? null;
+                                        if ($newQuestionId) {
+                                            ProcessAlquimiaAgentQuestion::where('id', $newQuestionId)
+                                                ->update(['contexts' => json_encode($newContexts)]);
+                                        }
+                                    }
+                                }
                             }
                         }
                     });
 
                     break;
+                case 'PT':
+                    $tests = ProcessTest::where('step_id', $step->id)
+                        ->with([
+                            'appreciations',
+                            'categories.subcategories.questions.options',
+                            'categories.appreciations',
+                            'categories.subcategories.appreciations',
+                            'questions.options'
+                        ])
+                        ->get();
+
+                    DB::transaction(function () use ($tests, $newStep) {
+                        foreach ($tests as $testOrigin) {
+                            // 🟢 1️⃣ Duplicar el test principal
+                            $newTest = $testOrigin->replicate();
+                            $newTest->step_id = $newStep->id;
+                            $newTest->name = $testOrigin->name . '_copy';
+                            $newTest->save();
+
+                            // 🟢 2️⃣ Apreciaciones del test
+                            foreach ($testOrigin->appreciations as $appreciationOrigin) {
+                                $newAppreciation = $appreciationOrigin->replicate();
+                                $newAppreciation->process_test_id = $newTest->id;
+                                $newAppreciation->save();
+                            }
+
+                            // 🟢 3️⃣ Categorías
+                            foreach ($testOrigin->categories as $categoryOrigin) {
+                                $newCategory = $categoryOrigin->replicate();
+                                $newCategory->process_test_id = $newTest->id;
+                                $newCategory->save();
+
+                                // 3.1️⃣ Apreciaciones de categoría
+                                foreach ($categoryOrigin->appreciations as $catAppreciationOrigin) {
+                                    $newCatAppreciation = $catAppreciationOrigin->replicate();
+                                    $newCatAppreciation->p_test_category_id = $newCategory->id;
+                                    $newCatAppreciation->save();
+                                }
+
+                                // 3.2️⃣ Subcategorías
+                                foreach ($categoryOrigin->subcategories as $subOrigin) {
+                                    $newSub = $subOrigin->replicate();
+                                    $newSub->p_test_category_id = $newCategory->id;
+                                    $newSub->save();
+
+                                    // 3.2.1️⃣ Apreciaciones de subcategoría
+                                    foreach ($subOrigin->appreciations as $subAppreciationOrigin) {
+                                        $newSubAppreciation = $subAppreciationOrigin->replicate();
+                                        $newSubAppreciation->p_test_subcategory_id = $newSub->id;
+                                        $newSubAppreciation->save();
+                                    }
+
+                                    // 3.2.2️⃣ Preguntas de subcategoría
+                                    foreach ($subOrigin->questions as $questionOrigin) {
+                                        $newQuestion = $questionOrigin->replicate();
+                                        $newQuestion->process_test_id = $newTest->id;
+                                        $newQuestion->p_test_subcategory_id = $newSub->id;
+                                        $newQuestion->save();
+
+                                        // 3.2.3️⃣ Opciones de la pregunta
+                                        foreach ($questionOrigin->options as $optionOrigin) {
+                                            $newOption = $optionOrigin->replicate();
+                                            $newOption->process_test_id = $newTest->id;
+                                            $newOption->p_test_question_id = $newQuestion->id;
+                                            $newOption->save();
+                                        }
+                                    }
+                                }
+                            }
+
+                            // 🟢 4️⃣ Preguntas directamente asociadas al test (sin subcategoría)
+                            foreach ($testOrigin->questions->whereNull('p_test_subcategory_id') as $questionOrigin) {
+                                $newQuestion = $questionOrigin->replicate();
+                                $newQuestion->process_test_id = $newTest->id;
+                                $newQuestion->save();
+
+                                // 4.1️⃣ Opciones de estas preguntas
+                                foreach ($questionOrigin->options as $optionOrigin) {
+                                    $newOption = $optionOrigin->replicate();
+                                    $newOption->process_test_id = $newTest->id;
+                                    $newOption->p_test_question_id = $newQuestion->id;
+                                    $newOption->save();
+                                }
+                            }
+                        }
+                    });
+
+                    break;
+
+                case 'CV':
+                    $verifications = ProcessComplianceVerification::where('step_id', $step->id)
+                        ->with(['questions', 'answers'])
+                        ->get();
+
+                    DB::transaction(function () use ($verifications, $newStep) {
+                        foreach ($verifications as $verificationOrigin) {
+                            // 🟢 1️⃣ Duplicar la verificación principal
+                            $newVerification = $verificationOrigin->replicate();
+                            $newVerification->step_id = $newStep->id;
+                            $newVerification->required_steps = null; // vacío
+                            $newVerification->save();
+
+                            // 🟢 2️⃣ Duplicar preguntas asociadas
+                            foreach ($verificationOrigin->questions as $questionOrigin) {
+                                $newQuestion = $questionOrigin->replicate();
+                                $newQuestion->pc_verification_id = $newVerification->id;
+                                $newQuestion->save();
+
+                                // 🟢 3️⃣ Duplicar respuestas (si existen y quieres conservarlas)
+                                foreach ($questionOrigin->answers as $answerOrigin) {
+                                    $newAnswer = $answerOrigin->replicate();
+                                    $newAnswer->question_id = $newQuestion->id;
+                                    $newAnswer->pc_verification_id = $newVerification->id;
+                                    $newAnswer->save();
+                                }
+                            }
+
+                            // 🟢 4️⃣ Duplicar respuestas directas de la verificación (si aplica)
+                            foreach ($verificationOrigin->answers->whereNull('question_id') as $answerOrigin) {
+                                $newAnswer = $answerOrigin->replicate();
+                                $newAnswer->pc_verification_id = $newVerification->id;
+                                $newAnswer->save();
+                            }
+                        }
+                    });
+                    break;
+
+                case 'AT':
+                    $schedulings = ProcessAdvisorScheduling::where('step_id', $step->id)->get();
+
+                    DB::transaction(function () use ($schedulings, $newStep) {
+                        foreach ($schedulings as $schedulingOrigin) {
+                            $newScheduling = $schedulingOrigin->replicate();
+                            $newScheduling->step_id = $newStep->id;
+                            $newScheduling->save();
+                        }
+                    });
+                    break;
+
 
                 default:
 

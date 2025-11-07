@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Contacts\ProcessTests;
 
+use App\Contact;
 use App\Models\ProcessContactTest;
 use App\Models\ProcessTestAnswer;
 use App\Models\ProcessTestOption;
@@ -128,6 +129,7 @@ class ProcessTestsContactComponent extends Component
 
     public function downloadResult()
     {
+        $contact = Contact::find($this->contactId);
         $processTest = $this->processTest;
 
         $answers = ProcessTestAnswer::with(['question.subcategory.category', 'option'])
@@ -327,6 +329,7 @@ class ProcessTestsContactComponent extends Component
             'categories' => $categories,
             'answers' => $answers,
             'generalChartBase64' => $generalChartBase64,
+            'contact' => $contact,
         ])
             ->setPaper('a4', 'portrait')
             ->setOptions([

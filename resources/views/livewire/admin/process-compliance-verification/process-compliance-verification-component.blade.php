@@ -63,7 +63,7 @@
                                     <i class="fa fa-plus-square"></i> <span>{{ __('voyager::generic.add_new') }}</span>
                                 </button>
                                 <a class="btn btn-success"
-                                    href="{{ route('process-compliance-verification-answers', ['id' => $this->complianceId]) }}"><i
+                                    href="{{ route('process-compliance-verification-answers', ['id' => $step->id]) }}"><i
                                         class="voyager-puzzle"></i>&nbsp;Respuestas</a>
                             </div>
                         </div>
