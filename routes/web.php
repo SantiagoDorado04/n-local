@@ -174,6 +174,7 @@ use App\Http\Livewire\Admin\ProcessTests\ProcessTestsCategories\ProcessTestsSubc
 use App\Http\Livewire\Admin\ProcessTests\ProcessTestsCategories\ProcessTestsSubcategories\ProcessTestSubcategoriesAppreciationsComponent;
 use App\Http\Livewire\Admin\ProcessTests\ProcessTestsComponent;
 use App\Http\Livewire\Admin\ProcessTests\ProcessTestsOptions\ProcessTestsOptionsComponent;
+use App\Http\Livewire\Admin\ProcessTests\ProcessTestsReportComponent;
 use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\MyOnlineRegistrationCoursesComponent;
 use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\OrMyCourseSessions\OrMyCharacterizations\OrMyCharacterizationsComponent;
 use App\Http\Livewire\Contacts\MyOnlineRegistrationCourses\OrMyCourseSessions\OrMyCharacterizations\OrMyCharacterizationsDiligences\OrMyCharacterizationsDiligencesComponent;
@@ -507,6 +508,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('process-test/{id}/subcategories', ProcessTestsSubcategoriesComponent::class)->name('process-test-subcategories');
         Route::get('process-test-categories/{id}/subcategories-appreciations', ProcessTestSubcategoriesAppreciationsComponent::class)->name('process-test-subcategories-appreciations');
         Route::get('process-test/{id}/appreciations', ProcessTestAppreciationsComponent::class)->name('process-test-appreciations');
+        Route::get('process-test/{id}/report', ProcessTestsReportComponent::class)->name('process-test-report');
 
 
 

@@ -74,6 +74,7 @@ class StepsComponent extends Component
             return $query->where('name', 'like', '%' . $searchName . '%');
         })
             ->where('stage_id', '=', $this->stageId)
+            ->with('processTest')
             ->orderBy('order', 'asc')
             ->paginate(1000);
 

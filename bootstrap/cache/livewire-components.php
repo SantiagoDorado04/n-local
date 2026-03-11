@@ -112,6 +112,7 @@
   'admin.process-tests.process-tests-categories.process-tests-subcategories.process-tests-subcategories-component' => 'App\\Http\\Livewire\\Admin\\ProcessTests\\ProcessTestsCategories\\ProcessTestsSubcategories\\ProcessTestsSubcategoriesComponent',
   'admin.process-tests.process-tests-component' => 'App\\Http\\Livewire\\Admin\\ProcessTests\\ProcessTestsComponent',
   'admin.process-tests.process-tests-options.process-tests-options-component' => 'App\\Http\\Livewire\\Admin\\ProcessTests\\ProcessTestsOptions\\ProcessTestsOptionsComponent',
+  'admin.process-tests.process-tests-report-component' => 'App\\Http\\Livewire\\Admin\\ProcessTests\\ProcessTestsReportComponent',
   'admin.processes.processes-component' => 'App\\Http\\Livewire\\Admin\\Processes\\ProcessesComponent',
   'admin.products-services.products-services-component' => 'App\\Http\\Livewire\\Admin\\ProductsServices\\ProductsServicesComponent',
   'admin.profile.companies-profile-component' => 'App\\Http\\Livewire\\Admin\\Profile\\CompaniesProfileComponent',

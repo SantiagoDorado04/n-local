@@ -269,6 +269,12 @@
 
                                                         @default
                                                     @endswitch
+                                                    @if ($step->processTest)
+                                                        <a href="{{ route('process-test-report', $step->processTest->id) }}"
+                                                            class="btn btn-info sm-b">
+                                                            <i class="fa fa-chart-bar"></i>&nbsp;Ver Reporte
+                                                        </a>
+                                                    @endif
                                                 </div>
                                                 <div class="clearfix">
                                                 </div>
